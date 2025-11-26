@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ✨ Cấu hình Favicon & PWA -->
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../images/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+
+    <title>Quản trị Hệ thống - Giám Sát IoT</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- ✨ BẢO VỆ TRANG QUẢN TRỊ -->
+    <script src="../assets/js/admin-protect.js"></script>
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="page-container">
+        <div class="admin-header">
+            <h1>Bảng điều khiển Quản trị</h1>
+            <p>Quản lý người dùng và các gói dịch vụ của hệ thống.</p>
+        </div>
+
+        <!-- ✨ [MỚI] Thanh điều hướng phụ cho khu vực quản trị -->
+        <nav class="admin-nav glass-panel">
+            <a href="admin-dashboard.html" class="admin-nav-link">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </a>
+            <a href="admin.html" class="admin-nav-link active">
+                <i class="fas fa-users"></i> Quản lý Người dùng
+            </a>
+            <a href="#upgrade-requests-section" id="nav-upgrade-requests" class="admin-nav-link">
+                <i class="fas fa-arrow-alt-circle-up"></i> Yêu cầu Nâng cấp
+            </a>
+            <a href="#station-control-section" id="nav-station-control" class="admin-nav-link">
+                <i class="fas fa-cogs"></i> Điều khiển Trạm
+            </a>
+            <a href="#reports-section" id="nav-reports" class="admin-nav-link">
+                <i class="fas fa-file-alt"></i> Báo cáo & Đánh giá
+            </a>
+        </nav>
+
+        <section id="user-management-section" class="admin-section glass-panel">
+            <div class="section-header">
+                <h2>Danh sách Người dùng</h2>
+                <div class="header-actions">
+                    <input type="text" id="user-search" placeholder="Tìm kiếm người dùng...">
+                    <!-- ✨ [MỚI] Thêm bộ lọc theo gói dịch vụ -->
+                    <select id="plan-filter">
+                        <option value="all">Tất cả các gói</option>
+                        <option value="Free">Free</option>
+                        <option value="Pro">Pro</option>
+                        <option value="Enterprise">Enterprise</option>
+                    </select>
+                    <button id="add-user-btn" class="primary-btn">
+                        <i class="fas fa-plus"></i> Thêm Người dùng
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="user-table">
+                    <thead>
+                        <tr>
+                            <th>Email / Tên đăng nhập</th>
+                            <th>Họ và Tên</th>
+                            <th>Gói Dịch vụ</th>
+                            <th>Ngày tham gia</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                        <!-- Dữ liệu người dùng sẽ được chèn vào đây bằng JavaScript -->
+                        <tr>
+                            <td colspan="6" class="loading-row">
+                                <div class="spinner"></div>
+                                <span>Đang tải danh sách người dùng...</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ✨ [MỚI] Vùng hiển thị các yêu cầu nâng cấp -->
+        <section id="upgrade-requests-section" class="admin-section glass-panel" style="display: none;">
+            <div class="section-header">
+                <h2>Yêu cầu Nâng cấp Đang chờ</h2>
+            </div>
+            <div class="table-container">
+                <table id="requests-table">
+                    <thead>
+                        <tr>
+                            <th>Email Người dùng</th>
+                            <th>Gói Hiện tại</th>
+                            <th>Gói Yêu cầu</th>
+                            <th>Ngày Yêu cầu</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requests-table-body">
+                        <!-- Dữ liệu yêu cầu sẽ được chèn vào đây -->
+                        <tr>
+                            <td colspan="5" class="loading-row">
+                                <div class="spinner"></div>
+                                <span>Đang tải danh sách yêu cầu...</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ✨ [MỚI] Vùng Điều khiển Trạm -->
+        <section id="station-control-section" class="admin-section glass-panel" style="display: none;">
+            <div class="section-header">
+                <h2>Điều khiển Trạm Quan Trắc</h2>
+                <p class="section-desc">Gửi lệnh điều khiển trực tiếp xuống các trạm ESP32/ESP8266.</p>
+            </div>
+            <div class="station-list">
+                <!-- Dữ liệu trạm sẽ được load từ API -->
+                <div class="loading-row" style="width: 100%; text-align: center; padding: 20px;">
+                    <div class="spinner"></div>
+                    <span>Đang tải trạng thái trạm...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ✨ [MỚI] Vùng Báo cáo & Đánh giá -->
+        <section id="reports-section" class="admin-section glass-panel" style="display: none;">
+            <div class="section-header">
+                <h2>Báo cáo & Đánh giá Hiệu năng</h2>
+                <p class="section-desc">Tài liệu báo cáo tiến độ và đánh giá kết quả thực hiện đề tài.</p>
+            </div>
+            <div class="grid-container"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+                <!-- Report Lan 2 -->
+                <div class="detail-card"
+                    style="background: rgba(255,255,255,0.5); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.3);">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <div
+                            style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                            <i class="fas fa-presentation"></i>
+                        </div>
+                        <h3 style="margin: 0;">Báo Cáo Lần 2</h3>
+                    </div>
+                    <p style="color: #666; margin-bottom: 1rem;">Báo cáo sơ bộ kết quả thực hiện đề tài lần 2
+                        (27/11/2025). Dạng Slide thuyết trình.</p>
+                    <a href="../reports/report_lan2.html" target="_blank" class="primary-btn"
+                        style="text-decoration: none; display: inline-block;">
+                        <i class="fas fa-external-link-alt"></i> Xem Báo Cáo
+                    </a>
+                </div>
+
+                <!-- Report Lan 1 PDF -->
+                <div class="detail-card"
+                    style="background: rgba(255,255,255,0.5); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.3);">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <div
+                            style="width: 40px; height: 40px; background: linear-gradient(135deg, #ef4444, #dc2626); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h3 style="margin: 0;">File Báo Cáo Lần 1</h3>
+                    </div>
+                    <p style="color: #666; margin-bottom: 1rem;">Tài liệu báo cáo gốc lần 1 (PDF). Chi tiết các hạng mục
+                        đã thực hiện.</p>
+                    <a href="BaoCao_GroupMeeting_DuongNgocThanh_lan1.pdf" target="_blank" class="primary-btn"
+                        style="text-decoration: none; display: inline-block; background: #ef4444;">
+                        <i class="fas fa-download"></i> Tải xuống PDF
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Điều khiển Trạm -->
+    <div id="station-control-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Cấu hình Trạm: <span id="modal-station-id">--</span></h3>
+                <button id="control-modal-close-btn" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="control-group">
+                    <label>Khởi động lại thiết bị</label>
+                    <button id="btn-reset-device" class="danger-btn full-width">
+                        <i class="fas fa-power-off"></i> Reset ESP32
+                    </button>
+                    <p class="control-hint">Thiết bị sẽ khởi động lại ngay lập tức.</p>
+                </div>
+
+                <div class="control-group">
+                    <label>Tần suất gửi dữ liệu (giây)</label>
+                    <div class="input-with-btn">
+                        <input type="number" id="interval-input" value="10" min="5" max="3600">
+                        <button id="btn-set-interval" class="primary-btn">Cập nhật</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Cảnh báo âm thanh/đèn</label>
+                    <div class="toggle-wrapper">
+                        <span>Trạng thái: </span>
+                        <label class="switch">
+                            <input type="checkbox" id="alert-toggle">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Cập nhật Firmware (OTA)</label>
+                    <div class="input-with-btn">
+                        <input type="file" id="firmware-file" accept=".bin">
+                        <button id="btn-update-firmware" class="primary-btn">Nạp Code</button>
+                    </div>
+                    <div id="upload-progress-container" style="display: none; margin-top: 10px;">
+                        <div class="progress-bar"
+                            style="width: 100%; background: #eee; height: 10px; border-radius: 5px; overflow: hidden;">
+                            <div id="upload-progress"
+                                style="width: 0%; background: #4CAF50; height: 100%; transition: width 0.3s;"></div>
+                        </div>
+                        <span id="upload-status" style="font-size: 12px; color: #666;">Đang tải lên...</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Cấu hình WiFi (Online)</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" id="wifi-ssid" placeholder="Tên WiFi mới" style="flex: 1;">
+                        <input type="password" id="wifi-pass" placeholder="Mật khẩu" style="flex: 1;">
+                    </div>
+                    <button id="btn-update-wifi" class="primary-btn" style="width: 100%;">Gửi Cấu hình WiFi</button>
+                    <p style="font-size: 12px; color: #666; margin-top: 5px;">
+                        <i class="fas fa-info-circle"></i> Nếu trạm đã mất kết nối, hãy dùng điện thoại kết nối vào WiFi
+                        của trạm (VD: Station_01_AP) để cấu hình.
+                    </p>
+                </div>
+
+                <div class="control-group">
+                    <button id="btn-reset-device" class="danger-btn" style="width: 100%;">
+                        <i class="fas fa-power-off"></i> Khởi động lại thiết bị
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal để chỉnh sửa gói người dùng -->
+    <div id="edit-user-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Chỉnh sửa Người dùng</h3>
+                <button id="modal-close-btn" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-user-form">
+                    <input type="hidden" id="edit-user-id">
+                    <div class="input-group">
+                        <label>Email</label>
+                        <p id="edit-user-email" class="user-info-text"></p>
+                    </div>
+                    <div class="input-group">
+                        <label>Họ và Tên</label>
+                        <p id="edit-user-name" class="user-info-text"></p>
+                    </div>
+                    <div class="input-group">
+                        <label for="edit-user-plan">Gói Dịch vụ</label>
+                        <select id="edit-user-plan">
+                            <option value="Free">Free</option>
+                            <option value="Pro">Pro</option>
+                            <option value="Enterprise">Enterprise</option>
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="primary-btn">Lưu Thay đổi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+    <div id="toast-container"></div>
+
+    <script src="../assets/js/i18n.js"></script>
+    <script src="../assets/js/toast.js" defer></script>
+    <script src="../assets/js/main.js" defer></script>
+    <script src="../assets/js/script.js" defer></script> <!-- ✨ [MỚI] Tận dụng script.js có sẵn -->
+    <script src="../assets/js/admin.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Giám Sát IoT</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/admin.css"> <!-- Tái sử dụng một số style từ trang admin -->
+    <link rel="stylesheet" href="../assets/css/admin-dashboard.css"> <!-- Style mới cho dashboard -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="../assets/js/admin-protect.js"></script> <!-- Bảo vệ trang quản trị -->
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="page-container">
+        <div class="admin-header">
+            <h1>Bảng điều khiển Quản trị</h1>
+            <p>Thống kê tổng quan về người dùng và hoạt động của hệ thống.</p>
+        </div>
+
+        <!-- ✨ [MỚI] Thanh điều hướng phụ cho khu vực quản trị -->
+        <nav class="admin-nav">
+            <a href="admin-dashboard.html" class="admin-nav-link active">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </a>
+            <a href="admin.html" class="admin-nav-link">
+                <i class="fas fa-users"></i> Quản lý Người dùng
+            </a>
+        </nav>
+
+        <!-- Vùng hiển thị các thẻ thống kê -->
+        <section class="stat-cards-grid">
+            <div class="stat-card">
+                <div class="stat-card-icon" style="--icon-color: #007aff;"><i class="fas fa-users"></i></div>
+                <div class="stat-card-info">
+                    <span class="stat-card-title">Tổng số Người dùng</span>
+                    <span class="stat-card-value" id="total-users">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon" style="--icon-color: #34c759;"><i class="fas fa-user-check"></i></div>
+                <div class="stat-card-info">
+                    <span class="stat-card-title">Đang Hoạt động</span>
+                    <span class="stat-card-value" id="active-users">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon" style="--icon-color: #ff9500;"><i class="fas fa-star"></i></div>
+                <div class="stat-card-info">
+                    <span class="stat-card-title">Gói Pro</span>
+                    <span class="stat-card-value" id="pro-users">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon" style="--icon-color: #5856d6;"><i class="fas fa-crown"></i></div>
+                <div class="stat-card-info">
+                    <span class="stat-card-title">Gói Enterprise</span>
+                    <span class="stat-card-value" id="enterprise-users">0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vùng hiển thị các biểu đồ -->
+        <section class="chart-grid">
+            <div class="chart-container">
+                <h3>Phân bổ Người dùng theo Gói</h3>
+                <canvas id="plan-distribution-chart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Người dùng Mới (30 ngày qua)</h3>
+                <canvas id="new-users-chart"></canvas>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="footer-placeholder"></div>
+    <div id="toast-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="../assets/js/i18n.js"></script>
+    <script src="../assets/js/toast.js" defer></script>
+    <script src="../assets/js/main.js" defer></script>
+    <script src="../assets/js/admin-dashboard.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Cấu hình Favicon & PWA -->
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../images/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="../ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Phân Tích Dữ Liệu</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/data-analysis.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1/dist/chartjs-adapter-moment.min.js"></script>
+    <!-- ✨ [MỚI] Thêm thư viện zoom/pan cho Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+    <!-- ✨ [MỚI] Script bảo vệ trang, yêu cầu đăng nhập -->
+    <!-- <script src="/assets/js/auth-protect.js"></script> -->
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="page-container" role="main">
+        <div class="page-title">
+            <h1>Công cụ Phân tích Dữ liệu</h1>
+            <p>Truy vấn, trực quan hóa và phân tích thống kê dữ liệu lịch sử từ các trạm quan trắc.</p>
+        </div>
+
+        <div class="analysis-layout">
+            <!-- Cột chính cho bộ lọc và biểu đồ -->
+            <div class="analysis-main-column">
+                <!-- Data Selection Section -->
+                <section class="data-selection-section glass-panel">
+                    <h2>Chọn Dữ Liệu</h2>
+                    <div class="selection-controls">
+                        <!-- Time Range Selection -->
+                        <div class="control-group">
+                            <label>Khoảng thời gian:</label>
+                            <div class="date-inputs">
+                                <div class="input-group">
+                                    <label for="startDate">Từ:</label>
+                                    <input type="datetime-local" id="startDate">
+                                </div>
+                                <div class="input-group">
+                                    <label for="endDate">Đến:</label>
+                                    <input type="datetime-local" id="endDate">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Station Selection -->
+                        <div class="control-group">
+                            <label>Chọn trạm:</label>
+                            <div class="station-selector">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="selectAllStations" checked>
+                                    <span class="checkbox-label">Tất cả các trạm</span>
+                                </label>
+                                <div class="station-list">
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" value="station_01" class="station-checkbox" checked>
+                                        <span class="checkbox-label">Trạm 1</span>
+                                    </label>
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" value="station_02" class="station-checkbox" checked>
+                                        <span class="checkbox-label">Trạm 2</span>
+                                    </label>
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" value="station_03" class="station-checkbox" checked>
+                                        <span class="checkbox-label">Trạm 3</span>
+                                    </label>
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" value="station_04" class="station-checkbox" checked>
+                                        <span class="checkbox-label">Trạm 4</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button id="fetchData" class="primary-button">Lấy Dữ Liệu</button>
+                            <!-- ✨ [MỚI] Thêm nút và input ẩn để nhập dữ liệu -->
+                            <button id="importDataBtn" class="secondary-button">Nhập Dữ liệu</button>
+                            <button id="exportData" class="secondary-button">Xuất CSV</button>
+                            <input type="file" id="importDataFile" accept=".csv,.json" style="display: none;">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Data Visualization Section -->
+                <section class="data-viz-section glass-panel">
+                    <h2>Biểu Đồ Dữ Liệu</h2>
+                    <div class="chart-controls">
+                        <div class="control-group">
+                            <label>Loại biểu đồ:</label>
+                            <select id="chartType">
+                                <option value="line">Đường</option>
+                                <option value="bar">Cột</option>
+                                <option value="scatter">Điểm</option>
+                            </select>
+                            <!-- ✨ [MỚI] Nút để reset zoom trên biểu đồ -->
+                            <button id="resetZoomBtn" class="secondary-button" style="display: none;">Reset
+                                Zoom</button>
+                        </div>
+                        <div class="control-group">
+                            <label>Chọn thông số:</label>
+                            <select id="dataParameter">
+                                <option value="temperature">Nhiệt độ</option>
+                                <option value="humidity">Độ ẩm</option>
+                                <option value="radiation">Phóng xạ (uSv/h)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="dataChart"></canvas>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Cột phụ cho thống kê -->
+            <div class="analysis-side-column">
+                <!-- Statistical Analysis Section -->
+                <section class="statistics-section glass-panel">
+                    <h2>Phân Tích Thống Kê</h2>
+                    <!-- ✨ [CẢI TIẾN] Container này sẽ được JS điền dữ liệu thống kê động -->
+                    <div id="statistics-results" class="stats-container">
+                        <p class="placeholder">Kết quả thống kê sẽ được hiển thị ở đây sau khi lấy dữ liệu.</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <!-- Tải các tệp JS dùng chung -->
+    <script src="../assets/js/i18n.js"></script>
+    <script src="../assets/js/toast.js" defer></script>
+    <script src="../assets/js/main.js" defer></script>
+    <!-- Tải tệp JS của riêng trang này -->
+    <script src="../assets/js/data-analysis.js"></script>
+</body>
+
+</html>

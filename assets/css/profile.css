@@ -1,0 +1,407 @@
+.profile-container {
+    max-width: 1600px;
+    /* Mở rộng chiều rộng tối đa */
+    margin: 40px auto;
+    /* Giữ lại căn giữa nhưng với không gian rộng hơn */
+    display: block;
+    /* Chuyển về block để layout con (flex) hoạt động đúng */
+    gap: 30px;
+    /* Gap sẽ được xử lý bởi .profile-layout */
+}
+
+.profile-card {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    padding: 30px;
+}
+
+.profile-card h3 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--heading-color);
+}
+
+/* Avatar Card */
+.avatar-card {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.avatar-uploader {
+    position: relative;
+}
+
+.avatar-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--card-background);
+    box-shadow: 0 4px 10px var(--shadow-color);
+}
+
+.avatar-upload-button {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.avatar-upload-button:hover {
+    transform: scale(1.05);
+}
+
+.avatar-info h3 {
+    margin: 0;
+    padding: 0;
+    border: none;
+    color: var(--heading-color);
+    font-size: 1.5rem;
+}
+
+.avatar-info p {
+    margin: 5px 0 0 0;
+    color: var(--text-color);
+}
+
+/* Forms */
+.profile-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.profile-card .input-group small {
+    font-size: 0.85rem;
+    color: var(--text-color-muted);
+    margin-top: 5px;
+}
+
+.profile-card .input-group input[disabled] {
+    background-color: var(--background-color);
+    color: var(--text-color-muted);
+    cursor: not-allowed;
+}
+
+/* CSS cho các trường mới */
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-row .input-group {
+    flex: 1;
+}
+
+/* Tạo kiểu cho thẻ <select> (Giới tính) */
+.profile-card select {
+    width: 100%;
+    padding: 12px 15px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 1em;
+}
+
+.profile-card select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+}
+
+/* CSS cho thông báo lỗi trên trang profile */
+#profile-error,
+#password-error {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: var(--status-danger-text);
+    border: 1px solid var(--status-danger-text);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* ✨ [MỚI] CSS cho nút và modal nâng cấp gói */
+.modal.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    /* Đảm bảo modal nổi lên trên */
+}
+
+.modal-content {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    color: var(--heading-color);
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 2em;
+    color: var(--text-color-muted);
+    cursor: pointer;
+}
+
+.modal-body {
+    margin-bottom: 25px;
+}
+
+.modal-body .input-group {
+    margin-bottom: 20px;
+}
+
+.modal-body .input-group label {
+    display: block;
+    font-weight: 500;
+    color: var(--heading-color);
+    margin-bottom: 8px;
+}
+
+.modal-body select {
+    width: 100%;
+    padding: 12px 15px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.modal-actions {
+    text-align: right;
+}
+
+.upgrade-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.plan-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.plan-container input {
+    flex-grow: 1;
+}
+
+.upgrade-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: linear-gradient(45deg, var(--primary-color), #00c6ff);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.upgrade-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+}
+
+.modal-subtitle {
+    text-align: center;
+    color: var(--text-color-muted);
+    margin-top: -10px;
+    margin-bottom: 30px;
+}
+
+.pricing-plans-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.plan-card {
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 25px;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.plan-card.popular {
+    border-color: var(--primary-color);
+    transform: scale(1.05);
+    box-shadow: 0 8px 30px rgba(0, 122, 255, 0.2);
+}
+
+.plan-tag {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary-color);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.plan-header h4 {
+    font-size: 1.5rem;
+    color: var(--heading-color);
+    margin: 0 0 10px 0;
+}
+
+.plan-price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0 0 25px 0;
+}
+
+.plan-price span {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text-color-muted);
+}
+
+.plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 30px 0;
+    text-align: left;
+}
+
+.plan-features li {
+    margin-bottom: 12px;
+    color: var(--text-color);
+}
+
+.plan-features i {
+    margin-right: 10px;
+    color: var(--status-good-text);
+}
+
+.plan-features li .fa-times {
+    color: var(--status-danger-text);
+    opacity: 0.7;
+}
+
+.plan-button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--primary-color);
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.plan-button:hover:not(:disabled) {
+    background-color: var(--primary-color-hover);
+}
+
+.plan-button:disabled {
+    background-color: var(--border-color);
+    border-color: var(--border-color);
+    color: var(--text-color-muted);
+    cursor: not-allowed;
+}
+
+.error-hidden {
+    display: none;
+}
+
+/* Legend and Filter Buttons */
+.legend-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.profile-container h1 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: var(--heading-color);
+}
+
+.profile-layout {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.profile-sidebar {
+    flex: 1;
+    position: sticky;
+    top: 90px;
+    /* 70px header + 20px khoảng cách */
+}
+
+.profile-main {
+    flex: 2.5;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Responsive cho màn hình nhỏ hơn */
+@media (max-width: 992px) {
+    .profile-layout {
+        flex-direction: column;
+    }
+
+    .profile-sidebar {
+        position: static;
+        width: 100%;
+    }
+}

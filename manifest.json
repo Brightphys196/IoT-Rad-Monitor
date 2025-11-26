@@ -1,0 +1,23 @@
+{
+  "name": "Hệ Thống Quan Trắc Phóng Xạ IoT",
+  "short_name": "Quan Trắc IoT",
+  "description": "Ứng dụng web để theo dõi dữ liệu môi trường từ trạm quan trắc phóng xạ IoT.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "theme_color": "#007aff",
+  "icons": [
+    {
+      "src": "images/android-icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/android-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

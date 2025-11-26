@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ✨ [MỚI] Cấu hình Favicon & PWA -->
+    <link rel="apple-touch-icon" sizes="57x57" href="../images/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="../images/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="../images/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="../images/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="../images/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="../images/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="../images/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="../images/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../images/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="../images/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="../ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <title data-i18n="page_title_status">Trạng thái Hệ thống - Giám Sát IoT</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <!-- ✨ [MỚI] Script bảo vệ trang, yêu cầu đăng nhập -->
+    <!--<script src="../assets/js/auth-protect.js"></script>-->
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="page-container" role="main">
+
+        <main class="page-container">
+            <div class="page-title smart-status-title">
+                <h1 data-i18n="status_page_title">Trạng thái Hệ thống & Nhật ký</h1>
+                <p data-i18n="status_page_desc">Theo dõi trạng thái kết nối của thiết bị, cập nhật realtime, xem lại các
+                    sự
+                    kiện hệ thống quan trọng.</p>
+            </div>
+
+            <div class="smart-status-grid">
+                <!-- Thẻ trạng thái trạm dạng card hiện đại, responsive -->
+                <div class="station-cards">
+                    <div class="station-card smart glass-panel shadow-hover" id="station-card-01">
+                        <div class="station-header">
+                            <span class="station-icon online" id="station-icon-01"></span>
+                            <h3>Trạm 01</h3>
+                            <button id="refresh-status-btn-station_01" class="refresh-status-btn"
+                                data-station="station_01" title="Làm mới trạng thái">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M23 4v6h-6" />
+                                    <path d="M1 20v-6h6" />
+                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L20.5 10" />
+                                    <path d="M20.49 15a9 9 0 0 1-14.85 3.36L3.5 14" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="device-status-content-station_01" class="device-status-container smart">
+                            <div class="loader"></div>
+                        </div>
+                    </div>
+                    <div class="station-card smart glass-panel shadow-hover" id="station-card-02">
+                        <div class="station-header">
+                            <span class="station-icon online" id="station-icon-02"></span>
+                            <h3>Trạm 02</h3>
+                            <button id="refresh-status-btn-station_02" class="refresh-status-btn"
+                                data-station="station_02" title="Làm mới trạng thái">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M23 4v6h-6" />
+                                    <path d="M1 20v-6h6" />
+                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L20.5 10" />
+                                    <path d="M20.49 15a9 9 0 0 1-14.85 3.36L3.5 14" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="device-status-content-station_02" class="device-status-container smart">
+                            <div class="loader"></div>
+                        </div>
+                    </div>
+                    <div class="station-card smart glass-panel shadow-hover" id="station-card-03">
+                        <div class="station-header">
+                            <span class="station-icon online" id="station-icon-03"></span>
+                            <h3>Trạm 03</h3>
+                            <button id="refresh-status-btn-station_03" class="refresh-status-btn"
+                                data-station="station_03" title="Làm mới trạng thái">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M23 4v6h-6" />
+                                    <path d="M1 20v-6h6" />
+                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L20.5 10" />
+                                    <path d="M20.49 15a9 9 0 0 1-14.85 3.36L3.5 14" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="device-status-content-station_03" class="device-status-container smart">
+                            <div class="loader"></div>
+                        </div>
+                    </div>
+                    <div class="station-card smart glass-panel shadow-hover" id="station-card-04">
+                        <div class="station-header">
+                            <span class="station-icon online" id="station-icon-04"></span>
+                            <h3>Trạm 04</h3>
+                            <button id="refresh-status-btn-station_04" class="refresh-status-btn"
+                                data-station="station_04" title="Làm mới trạng thái">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M23 4v6h-6" />
+                                    <path d="M1 20v-6h6" />
+                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L20.5 10" />
+                                    <path d="M20.49 15a9 9 0 0 1-14.85 3.36L3.5 14" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="device-status-content-station_04" class="device-status-container smart">
+                            <div class="loader"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nhật ký hệ thống dạng bảng hiện đại -->
+                <div class="logs-card smart glass-panel">
+                    <div class="logs-header smart">
+                        <h3 data-i18n="system_logs_title">Nhật ký Hệ thống</h3>
+                        <div id="log-filter-buttons" class="filter-buttons smart">
+                            <button class="active" data-station="all">Tất cả</button>
+                            <button data-station="station_01">Trạm 01</button>
+                            <button data-station="station_02">Trạm 02</button>
+                            <button data-station="station_03">Trạm 03</button>
+                            <button data-station="station_04">Trạm 04</button>
+                        </div>
+                        <button id="refresh-logs-btn" title="Làm mới nhật ký" class="smart">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M23 4v6h-6" />
+                                <path d="M1 20v-6h6" />
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L20.5 10" />
+                                <path d="M20.49 15a9 9 0 0 1-14.85 3.36L3.5 14" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="system-logs-content" class="logs-container smart">
+                        <p class="placeholder">Đang tải nhật ký...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+    </main>
+    <div id="footer-placeholder"></div>
+
+    <script src="../assets/js/i18n.js"></script>
+    <script src="../assets/js/main.js" defer></script>
+    <script src="../assets/js/script.js" defer></script>
+</body>
+
+</html>

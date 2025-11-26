@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ✨ [MỚI] Cấu hình Favicon & PWA -->
+    <link rel="apple-touch-icon" sizes="57x57" href="../images/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="../images/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="../images/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="../images/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="../images/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="../images/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="../images/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="../images/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../images/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="../images/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="../ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Đánh giá & Nhận xét - Giám Sát IoT</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/evaluation.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cal-heatmap@4.2.2/dist/cal-heatmap.css">
+    <!-- Giữ CSS trong head -->
+    <!-- ✨ [SỬA LỖI] Thêm thư viện Font Awesome để hiển thị icon trên header -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- ✨ [MỚI] Script bảo vệ trang, yêu cầu đăng nhập -->
+    <!-- <script src="../assets/js/auth-protect.js"></script> -->
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="page-container" role="main">
+
+        <main class="page-container">
+            <div class="page-title">
+                <h1>Phân Tích & Báo Cáo Dữ Liệu</h1>
+                <p>Sử dụng AI để phân tích, xem lại lịch sử và quản lý các nhật ký quan trọng.</p>
+            </div>
+
+            <div class="evaluation-layout">
+                <div class="main-evaluation-column">
+                    <section class="ai-analysis-section glass-panel animate-on-scroll">
+                        <div class="ai-header">
+                            <h3>✨ Phân tích & Khuyến nghị AI</h3>
+                            <button id="btn-ai-summary">Nhận phân tích</button>
+                        </div>
+                        <div id="ai-summary-content" class="ai-content">
+                            <p class="placeholder">Nhấn nút để nhận tóm tắt và khuyến nghị từ Gemini dựa trên dữ liệu
+                                mới
+                                nhất...</p>
+                        </div>
+                    </section>
+
+                    <section class="historical-review-section glass-panel animate-on-scroll" data-animation-delay="200">
+                        <h3>🗓️ Xem lại Lịch sử & Sự kiện</h3>
+                        <div class="history-controls">
+                            <input type="date" id="history-date-picker">
+                            <button id="btn-fetch-history">Xem Báo cáo</button>
+                        </div>
+                        <div id="history-results" class="history-content">
+                            <p class="placeholder">Chọn một ngày để xem lại tóm tắt sự kiện và các cảnh báo...</p>
+                        </div>
+                    </section>
+
+                    <!-- Biểu đồ phóng xạ trung bình hàng ngày -->
+                    <section class="daily-average-chart-section glass-panel animate-on-scroll"
+                        data-animation-delay="300">
+                        <div class="chart-header">
+                            <h3>📊 Phóng xạ Trung bình Hàng ngày (30 ngày qua)</h3>
+                            <div class="chart-controls">
+                                <div class="filter-buttons station-filter" id="daily-station-filter">
+                                    <button data-station="all" class="active">Tất cả</button>
+                                    <button data-station="station_01">Trạm 01</button>
+                                    <button data-station="station_02">Trạm 02</button>
+                                    <button data-station="station_03">Trạm 03</button>
+                                    <button data-station="station_04">Trạm 04</button>
+                                </div>
+                                <div class="chart-legend" id="daily-chart-legend"></div>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper" style="height: 400px;">
+                            <canvas id="daily-radiation-chart"></canvas>
+                        </div>
+                    </section>
+
+                    <!-- ✨ [MỚI] So sánh hàng tháng -->
+                    <section class="monthly-comparison-section glass-panel animate-on-scroll"
+                        data-animation-delay="400">
+                        <div class="chart-header">
+                            <h3>⚖️ So sánh Dữ liệu Hàng tháng</h3>
+                            <div class="chart-controls">
+                                <div class="control-group">
+                                    <div class="filter-buttons" id="monthly-metric-filter">
+                                        <button data-metric="temperature" class="active">Nhiệt độ</button>
+                                        <button data-metric="humidity">Độ ẩm</button>
+                                        <button data-metric="radiation">Phóng xạ</button>
+                                    </div>
+                                    <div class="filter-buttons station-filter" id="monthly-station-filter">
+                                        <button data-station="all" class="active">Tất cả</button>
+                                        <button data-station="station_01">Trạm 01</button>
+                                        <button data-station="station_02">Trạm 02</button>
+                                        <button data-station="station_03">Trạm 03</button>
+                                        <button data-station="station_04">Trạm 04</button>
+                                    </div>
+                                </div>
+                                <div class="chart-actions">
+                                    <div class="chart-legend" id="monthly-chart-legend"></div>
+                                    <button id="btn-export-monthly" title="Xuất ra CSV">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                            <polyline points="7 10 12 15 17 10" />
+                                            <line x1="12" x2="12" y1="15" y2="3" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper" style="height: 350px;">
+                            <canvas id="monthly-comparison-chart"></canvas>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="side-evaluation-column">
+                    <section class="saved-analyses-section glass-panel animate-on-scroll" data-animation-delay="500">
+                        <div class="section-header">
+                            <h3>📂 Nhật ký Phân tích Đã lưu</h3>
+                            <button id="toggle-saved-analyses" class="section-toggle-btn" title="Ẩn/Hiện">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="saved-analyses-list" class="history-content">
+                            <p class="placeholder">Chưa có phân tích nào được lưu.</p>
+                        </div>
+                    </section>
+
+                    <section class="heatmap-container glass-panel animate-on-scroll" data-animation-delay="600">
+                        <div class="heatmap-header">
+                            <div class="heatmap-title-group">
+                                <h3 id="heatmap-title">🌡️ Tổng quan Nhiệt độ Năm</h3>
+                                <div class="filter-buttons" id="heatmap-filter-buttons">
+                                    <button data-metric="temperature" class="active">Nhiệt độ</button>
+                                    <button data-metric="humidity">Độ ẩm</button>
+                                </div>
+                                <!-- ✨ [MỚI] Thêm bộ lọc cho từng trạm -->
+                                <div class="filter-buttons" id="heatmap-station-filter">
+                                    <button data-station="all" class="active">Cả hai</button>
+                                    <button data-station="station_01">Trạm 01</button>
+                                    <button data-station="station_02">Trạm 02</button>
+                                </div>
+                            </div>
+                            <div class="heatmap-legend" id="heatmap-legend">
+                                <span class="legend-text">Mát</span>
+                                <div class="legend-color" style="background-color: #1c7ed6;"></div>
+                                <div class="legend-color" style="background-color: #f59f00;"></div>
+                                <div class="legend-color" style="background-color: #f03e3e;"></div>
+                                <span class="legend-text">Nóng</span>
+                            </div>
+                        </div>
+                        <div id="cal-heatmap"></div>
+                    </section>
+                </div>
+            </div>
+        </main>
+
+    </main>
+    <div id="footer-placeholder"></div>
+
+    <!-- Tải script ở cuối body và dùng defer để tối ưu -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script> <!-- ✨ [SỬA LỖI] Thêm thư viện Chart.js -->
+    <script src="https://d3js.org/d3.v7.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/cal-heatmap@4.2.2/dist/cal-heatmap.min.js" defer></script>
+    <script src="../assets/js/i18n.js"></script>
+    <script src="../assets/js/toast.js" defer></script>
+    <script src="../assets/js/main.js" defer></script>
+    <script src="../assets/js/script.js" defer></script>
+</body>
+
+</html>

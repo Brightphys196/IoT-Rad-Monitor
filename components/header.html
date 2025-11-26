@@ -1,0 +1,59 @@
+<header class="main-header glass-panel">
+    <div class="header-content">
+        <a href="/index.html" class="logo">
+            <img src="/images/apple-icon-180x180.png" alt="Logo Trạm Quan Trắc" class="logo-icon">
+            <span data-i18n="logo_text">Trạm Quan Trắc IoT</span>
+        </a>
+        <button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Mở menu" aria-expanded="false">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+
+        <div class="nav-container">
+            <nav class="main-nav">
+                <a href="/index.html" data-i18n="nav_home">Trang Chủ</a>
+                <a href="/pages/dashboard.html" data-i18n="nav_dashboard">Trạm Đo</a>
+                <a href="/pages/data-analysis.html" data-i18n="nav_data_analysis">Phân Tích Dữ Liệu</a>
+                <a href="/pages/hardware.html" data-i18n="nav_hardware">Phần Cứng</a>
+                <a href="/pages/status.html" data-i18n="nav_status">Trạng thái</a>
+                <a href="/pages/evaluation.html" data-i18n="nav_evaluation">Đánh giá & Nhận xét</a>
+                <!-- Link Quản trị đã được di chuyển vào menu người dùng -->
+            </nav>
+            <div class="header-actions">
+                <div class="language-switcher">
+                    <select id="language-switcher" title="Select Language" data-i18n-title="language_switcher_title">
+                        <option value="vi">Tiếng Việt</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                <button id="sound-toggle" type="button" title="Bật/Tắt âm thanh cảnh báo">
+                    <!-- Icon sẽ được cập nhật bởi main.js -->
+                </button>
+                <button id="theme-switch" title="Chuyển đổi giao diện Sáng/Tối" data-i18n-title="theme_switcher_title">
+                    <!-- Icon sẽ được cập nhật bởi main.js -->
+                </button>
+
+                <!-- Nút Đăng nhập, hiển thị khi chưa đăng nhập -->
+                <button id="login-btn" class="header-action-btn" data-i18n="login_button" style="display: none;">Đăng
+                    Nhập</button>
+
+                <!-- ✨ [CẬP NHẬT] Menu người dùng, hiển thị sau khi đăng nhập -->
+                <div id="user-profile-menu" class="user-profile-menu" style="display: none;">
+                    <button id="user-profile-btn-icon" class="user-icon-button" title="Tài khoản của bạn">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <div class="profile-dropdown glass-panel">
+                        <a href="/pages/profile.html" data-i18n="nav_profile">Hồ sơ của tôi</a>
+                        <!-- Link Quản trị sẽ được hiển thị bởi main.js nếu là admin -->
+                        <a href="/admin/admin.html" id="dropdown-admin-link" style="display: none;"
+                            data-i18n="nav_admin">Quản
+                            trị</a>
+                        <a href="#" id="dropdown-logout-btn" data-i18n="nav_logout">Đăng xuất</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</header>

@@ -1,0 +1,40 @@
+# System files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+
+# Node
+node_modules/
+npm-debug.log
+
+# Temporary files
+*.log
+tmp/
+temp/
+*.swp
+
+# Word/Office temp files
+~$*
+
+# Large files / Installers
+*.dmg
+*.iso
+*.zip
+*.exe
+
+# Secrets
+client_secret_*.json
+secrets.h
+secrets_*.h
+*.pem
+*.key
+*.crt

@@ -1,0 +1,774 @@
+/* =========================================
+   1. BIẾN & RESET (CORE)
+   ========================================= */
+:root {
+    /* Màu Apple */
+    --apple-bg: #ffffff;
+    --apple-text: #1d1d1f;
+    --apple-gray: #f5f5f7;
+    --apple-blue: #0071e3;
+    --apple-dark: #000000;
+
+    /* Biến dùng chung cho Chatbot & Workflow (Lấy từ style cũ sang) */
+    --primary-color: #007aff;
+    --card-background: #ffffff;
+    --border-color: #e9ecef;
+    --text-color-muted: #6c757d;
+    --heading-color: #1d1d1f;
+    --background-color: #f5f5f7;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+
+    /* Màu cho sơ đồ Workflow */
+    --connector-color-ingest: #3b82f6;
+    --connector-color-processing: #f59e0b;
+    --connector-color-response: #10b981;
+    --connector-color-request: #8b5cf6;
+    --connector-color-ai: #ec4899;
+    --connector-color-storage: #64748b;
+
+    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--apple-bg);
+    color: var(--apple-text);
+    margin: 0;
+    overflow-x: hidden;
+    line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* =========================================
+   2. NAVIGATION & HERO (APPLE STYLE)
+   ========================================= */
+.apple-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    z-index: 1000;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.nav-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    padding: 0 20px;
+}
+
+.brand {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.nav-links a {
+    font-size: 0.85rem;
+    margin-left: 25px;
+    color: #666;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--apple-dark);
+}
+
+.cta-small {
+    background: var(--apple-dark);
+    color: white !important;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.apple-section {
+    padding: 100px 0;
+    position: relative;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Hero */
+.hero-section {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: radial-gradient(circle at center, #fff 0%, #f5f5f7 100%);
+}
+
+.hero-title {
+    font-size: 4rem;
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+
+.text-gradient {
+    background: linear-gradient(90deg, #0071e3, #a259ff);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    color: #86868b;
+    max-width: 600px;
+    margin-bottom: 40px;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 20px;
+}
+
+.apple-button {
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-size: 1rem;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.apple-button.primary {
+    background: var(--apple-blue);
+    color: white;
+}
+
+.apple-button.primary:hover {
+    background: #0077ed;
+    transform: scale(1.05);
+}
+
+.apple-button.secondary {
+    color: var(--apple-blue);
+    font-weight: 500;
+}
+
+/* Story */
+.story-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+}
+
+.story-item h2 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.story-item p {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+/* Bento Grid */
+.bento-section {
+    background: var(--apple-gray);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.section-header h2 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 300px 300px;
+    gap: 20px;
+}
+
+.bento-card {
+    background: white;
+    border-radius: 30px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.bento-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.bento-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.bento-card p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.card-icon {
+    font-size: 2rem;
+    margin-bottom: auto;
+    color: var(--apple-blue);
+}
+
+.bento-card.cloud {
+    grid-column: span 2;
+    background: linear-gradient(135deg, #1c1c1e, #2c2c2e);
+    color: white;
+}
+
+.bento-card.cloud p {
+    color: #aaa;
+}
+
+.card-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+}
+
+/* Info Section */
+.info-grid-minimal {
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    gap: 30px;
+}
+
+.info-item h3 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: #86868b;
+    margin-bottom: 5px;
+}
+
+.info-item p {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.sub-text {
+    font-weight: 400 !important;
+    font-size: 0.9rem !important;
+    color: #666;
+}
+
+/* Animations */
+.fade-in,
+.fade-in-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: 0.8s ease-out;
+}
+
+.fade-in.visible,
+.fade-in-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.delay-1 {
+    transition-delay: 0.2s;
+}
+
+.delay-2 {
+    transition-delay: 0.4s;
+}
+
+.delay-3 {
+    transition-delay: 0.6s;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .story-grid,
+    .bento-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
+
+    .bento-card.cloud {
+        grid-column: span 1;
+    }
+
+    .architecture-diagram {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .arch-box {
+        width: 100% !important;
+        margin-bottom: 10px;
+    }
+
+    .info-grid-minimal {
+        flex-direction: column;
+    }
+}
+
+/* =========================================
+   3. ARCHITECTURE DIAGRAM (DARK MODE & NEON)
+   ========================================= */
+.architecture-section.dark-mode {
+    background: #000;
+    color: white;
+    padding-top: 100px;
+    padding-bottom: 100px;
+    overflow: hidden;
+}
+
+.text-glow {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+/* Control Panel / Legend */
+.glass-control-panel {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 10px 20px;
+    border-radius: 50px;
+    margin: 30px auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: fit-content;
+}
+
+.legend-item {
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #ddd;
+    transition: 0.3s;
+}
+
+.legend-item:hover,
+.legend-item.active {
+    color: white;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.dot.ingest {
+    background: var(--connector-color-ingest);
+}
+
+.dot.processing {
+    background: var(--connector-color-processing);
+}
+
+.dot.response {
+    background: var(--connector-color-response);
+}
+
+.dot.ai {
+    background: var(--connector-color-ai);
+}
+
+.dot.storage {
+    background: var(--connector-color-storage);
+}
+
+/* Diagram Layout */
+.diagram-wrapper {
+    position: relative;
+    padding: 20px;
+}
+
+.architecture-diagram {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 40px;
+    position: relative;
+}
+
+.arch-column {
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.column-label {
+    color: #666;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+/* Diagram Boxes */
+.arch-box {
+    background: #1c1c1e;
+    border: 1px solid #333;
+    color: white;
+    padding: 15px;
+    border-radius: 16px;
+    width: 140px;
+    text-align: center;
+    font-size: 0.9rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+    position: relative;
+    transition: 0.3s;
+}
+
+.arch-box.active {
+    background: #2c2c2e;
+    border-color: white;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.box-icon {
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+    color: #888;
+}
+
+.arch-box strong {
+    display: block;
+    font-weight: 600;
+}
+
+/* SVG Connectors */
+#workflow-connectors {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.connector-line {
+    fill: none;
+    stroke-width: 2px;
+    stroke-linecap: round;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.3;
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.1));
+}
+
+.connector-dot {
+    fill: white;
+    filter: drop-shadow(0 0 4px currentColor);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.connector-arrow-circle {
+    transition: all 0.3s ease;
+    stroke-width: 0;
+}
+
+/* Colors */
+.connector-line--ingest {
+    stroke: var(--connector-color-ingest);
+}
+
+.connector-arrow-circle--ingest {
+    fill: var(--connector-color-ingest);
+}
+
+.connector-dot--ingest {
+    fill: #93c5fd;
+    color: var(--connector-color-ingest);
+}
+
+.connector-line--processing {
+    stroke: var(--connector-color-processing);
+}
+
+.connector-arrow-circle--processing {
+    fill: var(--connector-color-processing);
+}
+
+.connector-dot--processing {
+    fill: #fcd34d;
+    color: var(--connector-color-processing);
+}
+
+.connector-line--response {
+    stroke: var(--connector-color-response);
+}
+
+.connector-arrow-circle--response {
+    fill: var(--connector-color-response);
+}
+
+.connector-dot--response {
+    fill: #6ee7b7;
+    color: var(--connector-color-response);
+}
+
+.connector-line--request {
+    stroke: var(--connector-color-request);
+}
+
+.connector-arrow-circle--request {
+    fill: var(--connector-color-request);
+}
+
+.connector-dot--request {
+    fill: #c4b5fd;
+    color: var(--connector-color-request);
+}
+
+.connector-line--ai {
+    stroke: var(--connector-color-ai);
+    stroke-dasharray: 5, 5;
+}
+
+.connector-arrow-circle--ai {
+    fill: var(--connector-color-ai);
+}
+
+.connector-dot--ai {
+    fill: #fbcfe8;
+    color: var(--connector-color-ai);
+}
+
+.connector-line--storage {
+    stroke: var(--connector-color-storage);
+}
+
+.connector-arrow-circle--storage {
+    fill: var(--connector-color-storage);
+}
+
+.connector-dot--storage {
+    fill: #cbd5e1;
+    color: var(--connector-color-storage);
+}
+
+/* Interactive States */
+#architecture-diagram.has-interaction .connector-line {
+    opacity: 0.05;
+}
+
+#architecture-diagram.has-interaction .arch-box {
+    opacity: 0.4;
+}
+
+#architecture-diagram .connector-line.active {
+    opacity: 1 !important;
+    stroke-width: 3px;
+    filter: drop-shadow(0 0 6px currentColor);
+}
+
+#architecture-diagram.has-interaction .arch-box.active {
+    opacity: 1;
+}
+
+#architecture-diagram .connector-line.active+marker+.connector-dot {
+    opacity: 1;
+    animation: flowAnimation 2s linear infinite;
+}
+
+@keyframes flowAnimation {
+    from {
+        offset-distance: 0%;
+    }
+
+    to {
+        offset-distance: 100%;
+    }
+}
+
+/* =========================================
+   4. CHATBOT (Đã tách khỏi style.css cũ)
+   ========================================= */
+.chat-widget-container {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 2000;
+}
+
+#chat-toggle-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+#chat-toggle-button:hover {
+    transform: scale(1.1);
+}
+
+#chat-toggle-button i {
+    font-size: 24px;
+}
+
+.chat-window {
+    width: 350px;
+    height: 500px;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: 0.3s;
+    visibility: hidden;
+}
+
+.chat-window.show {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+}
+
+.chat-header {
+    padding: 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.chat-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.message {
+    display: flex;
+    max-width: 85%;
+}
+
+.message-content {
+    padding: 10px 15px;
+    border-radius: 18px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.bot-message {
+    align-self: flex-start;
+}
+
+.bot-message .message-content {
+    background: #f1f3f5;
+    color: #333;
+    border-bottom-left-radius: 4px;
+}
+
+.user-message {
+    align-self: flex-end;
+}
+
+.user-message .message-content {
+    background: var(--primary-color);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-input-area {
+    display: flex;
+    border-top: 1px solid var(--border-color);
+    padding: 15px;
+}
+
+#chat-input {
+    flex-grow: 1;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+    margin-right: 10px;
+    outline: none;
+}
+
+#chat-send-button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

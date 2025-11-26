@@ -1,0 +1,242 @@
+/* Evaluation page layout */
+.evaluation-layout {
+    display: flex;
+    gap: 24px;
+    padding: 20px;
+    max-width: 1600px;
+    margin: 24px auto;
+}
+
+/* Main column with charts */
+.main-evaluation-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+}
+
+/* Side column */
+.side-evaluation-column {
+    width: 380px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Sections styling */
+.ai-analysis-section,
+.historical-review-section,
+.daily-average-chart-section,
+.monthly-comparison-section,
+.saved-analyses-section,
+.heatmap-container {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Chart sections specific */
+.daily-average-chart-section,
+.monthly-comparison-section {
+    min-height: 400px;
+}
+
+/* Chart containers */
+.chart-wrapper {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 16px;
+    background: var(--card-background);
+    border-radius: 8px;
+    padding: 16px;
+    z-index: 1;
+}
+
+/* Station colors */
+.station-01 {
+    color: #4e79a7;
+}
+
+.station-02 {
+    color: #f28e2c;
+}
+
+.station-03 {
+    color: #e15759;
+}
+
+.station-04 {
+    color: #76b7b2;
+}
+
+/* Chart animation */
+.chart-wrapper canvas {
+    transition: opacity 0.3s ease;
+}
+
+.chart-wrapper.loading canvas {
+    opacity: 0.5;
+}
+
+.chart-wrapper canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Headers */
+.ai-header,
+.section-header,
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+/* Chart controls */
+.chart-controls {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.chart-controls>* {
+    pointer-events: all;
+}
+
+.chart-header {
+    position: relative;
+    z-index: 2;
+    pointer-events: all;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.station-filter {
+    margin-top: 4px;
+}
+
+.chart-legend {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.9em;
+    color: var(--text-color-muted);
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+}
+
+.filter-button {
+    padding: 8px 16px;
+    border: none;
+    background: var(--button-background);
+    color: var(--text-color);
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 8px;
+    transition: background-color 0.3s;
+    position: relative;
+    z-index: 2;
+    pointer-events: all;
+}
+
+.filter-buttons button:hover {
+    background: var(--card-hover-shadow);
+    transform: translateY(-1px);
+    border-color: var(--primary-color);
+}
+
+.filter-buttons button:active {
+    transform: translateY(0);
+}
+
+.filter-buttons button.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 4px rgba(var(--primary-color-rgb), 0.2);
+}
+
+/* Heatmap specific styles */
+.heatmap-container {
+    overflow: hidden;
+}
+
+.heatmap-header {
+    margin-bottom: 20px;
+}
+
+#cal-heatmap {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 16px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .evaluation-layout {
+        flex-direction: column;
+    }
+
+    .side-evaluation-column {
+        width: 100%;
+    }
+
+    .chart-wrapper {
+        height: 300px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .evaluation-layout {
+        padding: 12px;
+    }
+
+    .filter-buttons {
+        flex-wrap: wrap;
+    }
+
+    .chart-controls {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

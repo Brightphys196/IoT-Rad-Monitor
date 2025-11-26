@@ -1,0 +1,176 @@
+:root {
+    --primary-color: #007aff;
+    --background-color: #f8f9fa;
+    --card-background: #ffffff;
+    --text-color: #495057;
+    --heading-color: #212529;
+    --border-color: #e9ecef;
+    --shadow-color: rgba(0, 0, 0, 0.06);
+    --status-danger-bg: #dc3545;
+}
+
+[data-theme="dark"] {
+    --background-color: #0d1117;
+    --card-background: #161b22;
+    --text-color: #adb5bd;
+    --heading-color: #f0f6fc;
+    --border-color: #30363d;
+    --shadow-color: rgba(0, 0, 0, 0.25);
+}
+
+.auth-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: var(--background-color);
+    padding: 20px;
+}
+
+.auth-card {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 8px 25px var(--shadow-color);
+    padding: 40px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+}
+
+.auth-logo {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 20px;
+}
+
+.auth-card h2 {
+    color: var(--heading-color);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+}
+
+.auth-subtitle {
+    color: var(--text-color);
+    margin: 0 0 30px 0;
+}
+
+#login-form,
+#register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.input-group {
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    font-weight: 500;
+    color: var(--heading-color);
+    margin-bottom: 8px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    box-sizing: border-box;
+    /* ✨ [SỬA LỖI] Đảm bảo padding không làm tràn layout */
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+}
+
+.auth-button {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+    margin-top: 10px;
+}
+
+.auth-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.auth-button:disabled {
+    background-color: var(--text-color-muted);
+    cursor: not-allowed;
+}
+
+.auth-switch {
+    margin-top: 25px;
+    color: var(--text-color);
+}
+
+.auth-switch a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+/* Lớp hiển thị lỗi */
+.error-hidden {
+    display: none;
+}
+
+#error-message {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: var(--status-danger-bg);
+    border: 1px solid var(--status-danger-bg);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.auth-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.google-button {
+    background-color: var(--card-background) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.google-button:hover {
+    background-color: var(--background-color) !important;
+    border-color: var(--text-color) !important;
+}
+
+.google-icon {
+    width: 20px;
+    height: 20px;
+}

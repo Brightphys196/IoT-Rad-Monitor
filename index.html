@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ✨ [MỚI] Cấu hình Favicon & PWA -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/images/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/images/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/images/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/images/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/images/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/images/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/images/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/images/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/images/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <title data-i18n="page_title_home">Trang Chủ - Hệ Thống Quan Trắc Phóng Xạ</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+    <!-- Aurora Background -->
+    <div class="aurora-bg">
+        <div class="aurora-blob blob-1"></div>
+        <div class="aurora-blob blob-2"></div>
+        <div class="aurora-blob blob-3"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="header-placeholder"></div>
+
+    <main class="page-container" role="main">
+
+        <main class="page-container">
+            <section class="hero">
+                <div class="hero-3d-scene">
+                    <div class="float-item cube-1"></div>
+                    <div class="float-item cube-2"></div>
+                    <div class="float-item cube-3"></div>
+                    <div class="float-item sphere-1"></div>
+                    <div class="float-item pyramid-1"></div>
+                </div>
+                <div class="hero-text">
+                    <h1 data-i18n="hero_title" class="animate-on-scroll text-gradient">Tối ưu code nhúng cho bộ điện tử
+                        của hệ đo liều phóng xạ và nâng cấp web hiển thị theo thời gian thực</h1>
+                    <p data-i18n="hero_desc" class="animate-on-scroll" data-animation-delay="200">Đồ án tốt nghiệp ứng
+                        dụng nền tảng AWS IoT để xây dựng một giải pháp giám sát toàn diện từ thiết bị nhúng đến giao
+                        diện web tương tác.</p>
+                    <a href="/pages/dashboard.html" class="hero-button glass-button magnetic-button animate-on-scroll"
+                        data-animation-delay="400" data-i18n="hero_button">Xem Dữ liệu Trực tuyến →</a>
+                </div>
+            </section>
+
+            <section class="project-introduction-section">
+                <div class="intro-content">
+                    <div class="intro-column animate-on-scroll">
+                        <h3 data-i18n="intro_problem_title">Vấn đề Đặt ra</h3>
+                        <p data-i18n="intro_problem_desc">Việc giám sát an toàn bức xạ tại các cơ sở nghiên cứu, khu
+                            công nghiệp hoặc trong môi trường tự nhiên đòi hỏi một hệ thống thu thập dữ liệu liên tục,
+                            chính xác và có khả năng cảnh báo tức thì. Các phương pháp đo đạc thủ công truyền thống
+                            thường tốn kém, có độ trễ cao và không cung cấp được cái nhìn tổng quan theo thời gian thực,
+                            gây khó khăn cho việc ra quyết định và ứng phó kịp thời khi có sự cố.</p>
+                    </div>
+                    <div class="intro-column animate-on-scroll" data-animation-delay="200">
+                        <h3 data-i18n="intro_solution_title">Giải pháp Đề xuất</h3>
+                        <p data-i18n="intro_solution_desc">Đồ án này xây dựng một hệ thống quan trắc phóng xạ tự động
+                            hóa hoàn toàn dựa trên nền tảng Internet of Things (IoT). Dữ liệu từ cảm biến được thu thập
+                            bởi vi điều khiển, sau đó được truyền tải an toàn lên nền tảng đám mây AWS. Tại đây, dữ liệu
+                            được xử lý, lưu trữ và cung cấp cho người dùng cuối thông qua một giao diện web trực quan,
+                            cho phép theo dõi, phân tích và nhận cảnh báo từ bất kỳ đâu.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <section class="info-section">
+            <div class="page-title">
+                <h2 data-i18n="about_title" class="animate-on-scroll">Về Đề Tài</h2>
+                <p data-i18n="about_desc" class="animate-on-scroll" data-animation-delay="100">Tổng quan về mục tiêu của
+                    đề tài và đội ngũ thực hiện.</p>
+            </div>
+            <div class="info-grid">
+                <div class="info-card glass-panel shadow-hover tilt-card animate-on-scroll" data-animation-delay="200">
+                    <div class="info-card-header">
+                        <div class="icon-wrapper bg-gradient-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <circle cx="12" cy="12" r="6"></circle>
+                                <circle cx="12" cy="12" r="2"></circle>
+                            </svg>
+                        </div>
+                        <h3 data-i18n="about_objective_title">Mục tiêu</h3>
+                    </div>
+                    <p data-i18n="about_objective_desc">Thiết kế, triển khai và đánh giá một hệ thống IoT hoàn chỉnh, có
+                        khả năng thu thập, truyền tải, lưu trữ và trực quan hóa dữ liệu môi trường (phóng xạ, nhiệt độ,
+                        độ ẩm) một cách hiệu quả và tin cậy.</p>
+                </div>
+                <div class="info-card glass-panel shadow-hover tilt-card animate-on-scroll" data-animation-delay="400">
+                    <div class="info-card-header">
+                        <div class="icon-wrapper bg-gradient-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                                <line x1="9" y1="2" x2="9" y2="22"></line>
+                                <line x1="15" y1="2" x2="15" y2="22"></line>
+                                <line x1="2" y1="9" x2="22" y2="9"></line>
+                                <line x1="2" y1="15" x2="22" y2="15"></line>
+                            </svg>
+                        </div>
+                        <h3 data-i18n="about_tech_title">Công nghệ sử dụng</h3>
+                    </div>
+                    <ul>
+                        <li><b>Firmware:</b> ESP8266 (C++/Arduino)</li>
+                        <li><b>Cloud:</b> AWS (IoT Core, DynamoDB, Lambda, API Gateway)</li>
+                        <li><b>Frontend:</b> HTML, CSS, JavaScript (Chart.js, Gauge.js)</li>
+                    </ul>
+                </div>
+                <div class="info-card glass-panel shadow-hover tilt-card animate-on-scroll" data-animation-delay="600">
+                    <div class="info-card-header">
+                        <div class="icon-wrapper bg-gradient-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                        <h3 data-i18n="about_info_title">Thông tin</h3>
+                    </div>
+                    <p><strong data-i18n="footer_student">Sinh viên:</strong> Dương Ngọc Thành - 19130225</p>
+                    <p><strong data-i18n="footer_supervisor">GVHD:</strong> TS. Võ Hồng Hải</p>
+                    <p><strong data-i18n="footer_university">Trường:</strong> Trường Đại học Khoa học tự nhiên, ĐHQG-HCM
+                    </p>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="research-direction-section">
+            <div class="page-title">
+                <h2 data-i18n="research_title" class="animate-on-scroll">Hướng Nghiên Cứu & Phạm Vi</h2>
+                <p data-i18n="research_desc" class="animate-on-scroll" data-animation-delay="100">Đề tài tập trung vào
+                    việc tích hợp các công nghệ hiện đại để tạo ra một
+                    giải
+                    pháp hoàn chỉnh.</p>
+            </div>
+            <div class="research-list">
+                <!-- Item 1 -->
+                <div class="research-item animate-on-scroll">
+                    <div class="research-item-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+                            <path d="m12 12-2 5h4l-2 5" />
+                        </svg>
+                    </div>
+                    <div class="research-item-content">
+                        <span class="research-item-number">01</span>
+                        <h3 data-i18n="research_cloud_title">Công nghệ Cloud & Dữ liệu thời gian thực</h3>
+                        <p data-i18n="research_cloud_desc">Nghiên cứu và áp dụng các dịch vụ đám mây (AWS IoT, Lambda,
+                            DynamoDB) để xây dựng một đường ống dữ liệu mạnh mẽ, có khả năng xử lý và truyền tải dữ liệu
+                            từ thiết bị đến người dùng cuối với độ trễ thấp.</p>
+                    </div>
+                </div>
+                <!-- Item 2 -->
+                <div class="research-item animate-on-scroll">
+                    <div class="research-item-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                    </div>
+                    <div class="research-item-content">
+                        <span class="research-item-number">02</span>
+                        <h3 data-i18n="research_ui_title">Phát triển Giao diện Tương tác</h3>
+                        <p data-i18n="research_ui_desc">Xây dựng một ứng dụng web (Web App) hoàn chỉnh, cho phép người
+                            dùng theo dõi các thông số môi trường một cách trực quan thông qua biểu đồ, đồng hồ đo và
+                            các công cụ phân tích dữ liệu thông minh.</p>
+                    </div>
+                </div>
+                <!-- Item 3 -->
+                <div class="research-item animate-on-scroll">
+                    <div class="research-item-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15-.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </div>
+                    <div class="research-item-content">
+                        <span class="research-item-number">03</span>
+                        <h3 data-i18n="research_deploy_title">Triển khai & Thực nghiệm Thực tế</h3>
+                        <p data-i18n="research_deploy_desc">Lắp đặt và vận hành hệ thống trong môi trường thực tế để thu
+                            thập dữ liệu, kiểm tra độ ổn định, đánh giá hiệu năng và xác thực tính đúng đắn của các giải
+                            pháp kỹ thuật đã được lựa chọn và triển khai.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="tech-stack-section">
+            <div class="page-title">
+                <h2 data-i18n="tech_choice_title" class="animate-on-scroll">Lựa Chọn Công Nghệ</h2>
+                <p data-i18n="tech_choice_desc" class="animate-on-scroll" data-animation-delay="100">Các nền tảng và
+                    công cụ được chọn lọc để đảm bảo hiệu suất, khả năng mở rộng và tính tin cậy.</p>
+            </div>
+            <div class="tech-stack-grid">
+                <!-- Card 1: Firmware -->
+                <div class="tech-card glass-panel shadow-hover animate-on-scroll" data-animation-delay="200">
+                    <div class="tech-card-icon bg-gradient-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                            <line x1="7" y1="2" x2="7" y2="22"></line>
+                            <line x1="17" y1="2" x2="17" y2="22"></line>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <line x1="2" y1="7" x2="7" y2="7"></line>
+                            <line x1="2" y1="17" x2="7" y2="17"></line>
+                            <line x1="17" y1="17" x2="22" y2="17"></line>
+                            <line x1="17" y1="7" x2="22" y2="7"></line>
+                        </svg>
+                    </div>
+                    <h3 data-i18n="tech_firmware_title">Firmware (Thiết bị)</h3>
+                    <h4 data-i18n="tech_firmware_reason">Lý do lựa chọn:</h4>
+                    <p data-i18n="tech_firmware_desc">ESP8266 được chọn vì chi phí thấp, cộng đồng hỗ trợ lớn và tích
+                        hợp sẵn Wi-Fi, lý tưởng cho các dự án IoT. Nền tảng Arduino giúp đơn giản hóa việc lập trình và
+                        quản lý thư viện.</p>
+                    <ul>
+                        <li><strong>Vi điều khiển:</strong> ESP8266 NodeMCU</li>
+                        <li><strong>Ngôn ngữ:</strong> C++ (trên nền tảng Arduino)</li>
+                        <li><strong>Giao thức:</strong> MQTT</li>
+                    </ul>
+                </div>
+                <!-- Card 2: Cloud -->
+                <div class="tech-card glass-panel shadow-hover animate-on-scroll" data-animation-delay="400">
+                    <div class="tech-card-icon bg-gradient-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+                        </svg>
+                    </div>
+                    <h3 data-i18n="tech_cloud_title">Cloud (Nền tảng đám mây)</h3>
+                    <h4 data-i18n="tech_cloud_reason">Lý do lựa chọn:</h4>
+                    <p data-i18n="tech_cloud_desc">AWS cung cấp một hệ sinh thái IoT toàn diện, an toàn và có khả năng
+                        mở rộng cao. Các dịch vụ được quản lý (managed services) giúp giảm gánh nặng vận hành và cho
+                        phép tập trung vào logic ứng dụng.</p>
+                    <ul>
+                        <li><strong>Nền tảng IoT:</strong> AWS IoT Core</li>
+                        <li><strong>Lưu trữ:</strong> Amazon DynamoDB</li>
+                        <li><strong>Xử lý:</strong> AWS Lambda</li>
+                        <li><strong>API:</strong> Amazon API Gateway</li>
+                    </ul>
+                </div>
+                <!-- Card 3: Frontend -->
+                <div class="tech-card glass-panel shadow-hover animate-on-scroll" data-animation-delay="600">
+                    <div class="tech-card-icon bg-gradient-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 18 22 12 16 6"></polyline>
+                            <polyline points="8 6 2 12 8 18"></polyline>
+                        </svg>
+                    </div>
+                    <h3 data-i18n="tech_frontend_title">Frontend (Giao diện)</h3>
+                    <h4 data-i18n="tech_frontend_reason">Lý do lựa chọn:</h4>
+                    <p data-i18n="tech_frontend_desc">Sử dụng HTML, CSS, và JavaScript thuần là cách tiếp cận linh hoạt,
+                        không phụ thuộc vào framework, giúp trang web nhẹ và dễ bảo trì. Chart.js và Gauge.js là các thư
+                        viện mạnh mẽ để trực quan hóa dữ liệu.</p>
+                    <ul>
+                        <li><strong>Ngôn ngữ:</strong> HTML, CSS, JavaScript</li>
+                        <li><strong>Biểu đồ:</strong> Chart.js & Gauge.js</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="architecture-section">
+            <div class="page-title">
+                <h1>Kiến trúc Hệ thống</h1>
+                <p>Cái nhìn chi tiết về các thành phần và luồng dữ liệu của toàn bộ hệ thống.</p>
+            </div>
+            <!-- ✨ [MỚI] Thêm chú giải cho các màu của đường nối -->
+            <div class="architecture-legend">
+                <div class="legend-item" data-type="ingest"
+                    data-tooltip="Dữ liệu được thu thập từ thiết bị, xử lý và lưu trữ vào cơ sở dữ liệu.">
+                    <span class="legend-color" style="--legend-color: var(--connector-color-ingest);"></span>
+                    <span class="legend-text">Luồng Thu thập Dữ liệu</span>
+                </div>
+                <div class="legend-item" data-type="processing"
+                    data-tooltip="Các quy trình xử lý dữ liệu nội bộ, chẳng hạn như tổng hợp dữ liệu hàng ngày.">
+                    <span class="legend-color" style="--legend-color: var(--connector-color-processing);"></span>
+                    <span class="legend-text">Luồng Xử lý Nội bộ</span>
+                </div>
+                <div class="legend-item" data-type="response"
+                    data-tooltip="Dữ liệu được truy vấn từ CSDL và trả về cho giao diện người dùng.">
+                    <span class="legend-color" style="--legend-color: var(--connector-color-response);"></span>
+                    <span class="legend-text">Luồng Phản hồi (Response)</span>
+                </div>
+                <div class="legend-item" data-type="request"
+                    data-tooltip="Hành động của người dùng trên giao diện web gửi yêu cầu đến hệ thống.">
+                    <span class="legend-color" style="--legend-color: var(--connector-color-request);"></span>
+                    <span class="legend-text">Luồng Yêu cầu (Request)</span>
+                </div>
+                <!-- ✨ [MỚI] Chú giải cho luồng AI -->
+                <div class="legend-item" data-type="ai"
+                    data-tooltip="Giao diện web gửi yêu cầu đến AI, AI truy vấn dữ liệu và trả về phân tích.">
+                    <span class="legend-color" style="--legend-color: var(--connector-color-ai);"></span>
+                    <span class="legend-text">Luồng Trợ lý AI</span>
+                </div>
+                <!-- ✨ [MỚI] Chú giải cho luồng S3 -->
+                <div class="legend-item" data-type="storage"
+                    data-tooltip="Luồng tải lên/tải xuống file trực tiếp đến S3 bằng presigned URL.">
+                    <span class="legend-color" style="--legend-color: var(--connector-color-storage);"></span>
+                    <span class="legend-text">Luồng File S3</span>
+                </div>
+            </div>
+
+            <div class="architecture-diagram" id="architecture-diagram">
+                <!-- SVG để vẽ các đường nối (hidden via CSS) -->
+                <svg id="workflow-connectors" class="connector-svg"></svg>
+
+                <!-- Cột 1: Lớp Thiết bị -->
+                <div class="arch-column" data-layer="devices">
+                    <h3>Lớp Thiết bị</h3>
+                    <div class="arch-box device" id="box-esp8266"
+                        data-tooltip="Thu thập dữ liệu từ cảm biến Geiger và DHT11, sau đó mã hóa và gửi lên AWS IoT Core qua giao thức MQTT an toàn.">
+                        <i class="fas fa-microchip box-icon"></i>
+                        <strong>Trạm ESP8266/ESP32</strong>
+                        <p>Thu thập dữ liệu cảm biến và gửi lên AWS IoT Core qua MQTT.</p>
+                    </div>
+                </div>
+
+                <!-- Cột 2: Lớp Tiếp nhận & Xử lý -->
+                <div class="arch-column" data-layer="intake">
+                    <h3>Lớp Tiếp nhận & Xử lý</h3>
+                    <div class="arch-box iot" id="box-iot-core"
+                        data-tooltip="Đóng vai trò là cổng vào cho thiết bị IoT. Sử dụng các Rules như SendDataToDynamoDB và UpdateDeviceStatusRule để định tuyến tin nhắn đến các hàm Lambda tương ứng.">
+                        <i class="fab fa-aws box-icon"></i>
+                        <strong>AWS IoT Core</strong>
+                        <p>Kích hoạt các Rules (SendDataToDynamoDB, UpdateDeviceStatusRule) để xử lý tin nhắn.</p>
+                    </div>
+                    <div class="arch-box lambda" id="box-lambda-process"
+                        data-tooltip="Hàm serverless được kích hoạt bởi AWS IoT Core Rule. Xử lý dữ liệu đến, cập nhật trạng thái thiết bị và ghi nhật ký sự kiện. Tên hàm: process-sensor-data.">
+                        <img src="images/lambda-icon.png" alt="Lambda" class="box-icon"
+                            style="width: 24px; height: 24px;">
+                        <strong>Lambda Process</strong>
+                        <p>Xử lý dữ liệu đến, cập nhật trạng thái và ghi nhật ký sự kiện.</p>
+                    </div>
+                    <div class="arch-box lambda scheduled" id="box-lambda-aggregate"
+                        data-tooltip="Hàm serverless được kích hoạt theo lịch (mỗi ngày một lần) bởi Amazon EventBridge. Tính toán dữ liệu trung bình của ngày hôm trước và lưu vào bảng DailyAggregates. Tên hàm: aggregate-daily-data.">
+                        <div class="arch-trigger">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            <span>Kích hoạt theo lịch</span>
+                        </div>
+                        <img src="images/lambda-icon.png" alt="Lambda" class="box-icon"
+                            style="width: 24px; height: 24px;">
+                        <strong>Aggregate</strong>
+                        <p>Chạy hàng ngày để tính toán và lưu trữ dữ liệu tóm tắt.</p>
+                    </div>
+                </div>
+
+                <!-- Cột 3: Lớp Lưu trữ -->
+                <div class="arch-column" data-layer="storage">
+                    <h3>Lớp Lưu trữ</h3>
+                    <div class="arch-box db" id="box-db-sensor"
+                        data-tooltip="Bảng NoSQL lưu trữ dữ liệu chuỗi thời gian thô từ cảm biến. Tối ưu hóa cho việc ghi và đọc nhanh.">
+                        <i class="fas fa-wave-square box-icon"></i>
+                        <strong>Sensor Data</strong>
+                        <p>Dữ liệu chuỗi thời gian thô.</p>
+                    </div>
+                    <div class="arch-box db" id="box-db-status"
+                        data-tooltip="Lưu trữ trạng thái kết nối 'online'/'offline' và thời gian 'heartbeat' cuối cùng của thiết bị.">
+                        <i class="fas fa-heartbeat box-icon"></i>
+                        <strong>DeviceStatus</strong>
+                        <p>Trạng thái kết nối và nhịp tim.</p>
+                    </div>
+                    <div class="arch-box db" id="box-db-logs"
+                        data-tooltip="Ghi lại các sự kiện quan trọng của hệ thống, chẳng hạn như kết nối thành công, lỗi xử lý, hoặc các cảnh báo.">
+                        <i class="fas fa-file-alt box-icon"></i>
+                        <strong>SystemLogs</strong>
+                        <p>Ghi lại các sự kiện hệ thống quan trọng.</p>
+                    </div>
+                    <div class="arch-box db" id="box-db-daily"
+                        data-tooltip="Lưu trữ dữ liệu tổng hợp theo ngày, được tính toán bởi hàm Lambda Aggregate. Tối ưu hóa cho việc truy vấn và phân tích xu hướng dài hạn.">
+                        <i class="fas fa-calendar-day box-icon"></i>
+                        <strong>DailyAggregates</strong>
+                        <p>Dữ liệu tổng hợp hàng ngày.</p>
+                    </div>
+                    <div class="arch-box db" id="box-db-saved"
+                        data-tooltip="Lưu trữ các bản phân tích do người dùng tạo ra từ giao diện web, thường là kết quả từ Gemini AI.">
+                        <i class="fas fa-bookmark box-icon"></i>
+                        <strong>SavedAnalyses</strong>
+                        <p>Các phân tích AI do người dùng lưu lại.</p>
+                    </div>
+                    <div class="arch-box storage" id="box-s3"
+                        data-tooltip="Lưu trữ dữ liệu lâu dài và sao lưu. Có thể chứa các bản sao lưu của bảng DynamoDB hoặc dữ liệu thô được lưu trữ để phân tích sau này.">
+                        <i class="fab fa-aws box-icon"></i>
+                        <strong>S3 Storage</strong>
+                        <p>Lưu trữ dữ liệu lâu dài và sao lưu.</p>
+                    </div>
+                </div>
+
+                <!-- Cột 4: Lớp API & Logic -->
+                <div class="arch-column" data-layer="api">
+                    <h3>Lớp API & Logic</h3>
+                    <div class="arch-box api" id="box-api-gateway"
+                        data-tooltip="API Gateway với tên IoT_Data_API, cung cấp các endpoint RESTful an toàn để tương tác với hệ thống backend.">
+                        <i class="fas fa-network-wired box-icon"></i>
+                        <strong>API Gateway</strong>
+                        <p>Cung cấp các endpoint như /data, /analysis, /device-status...</p>
+                    </div>
+                    <div class="arch-box lambda" id="box-lambda-api"
+                        data-tooltip="Tập hợp các hàm Lambda được kích hoạt bởi API Gateway để thực hiện các tác vụ như lấy dữ liệu, lưu/xóa phân tích, và kiểm tra trạng thái hệ thống.">
+                        <img src="images/lambda-icon.png" alt="Lambda" class="box-icon"
+                            style="width: 24px; height: 24px;">
+                        <strong>Các Hàm Lambda API</strong>
+                        <p>Cung cấp các endpoint để:</p>
+                        <ul class="function-list">
+                            <li>Lấy dữ liệu (/data, /get-yearly-data)</li>
+                            <li>Lấy trạng thái & nhật ký (/device-status, /system-logs)</li>
+                            <li>Quản lý phân tích (/analysis, /analyses)</li>
+                        </ul>
+                    </div>
+                    <div class="arch-box lambda ai" id="box-lambda-chat-ai"
+                        data-tooltip="Hàm Lambda được kích hoạt bởi API Gateway. Nhận yêu cầu từ người dùng, truy vấn CSDL và sử dụng Gemini để đưa ra các phân tích và câu trả lời thông minh.">
+                        <img src="images/lambda-icon.png" alt="Lambda" class="box-icon"
+                            style="width: 24px; height: 24px;">
+                        <strong>Trợ lý Gemini AI</strong>
+                        <p>Cung cấp khả năng phân tích và trả lời các câu hỏi về dữ liệu hệ thống.</p>
+                    </div>
+                    <div class="arch-box lambda" id="box-lambda-presigned-url"
+                        data-tooltip="Hàm Lambda được kích hoạt bởi API Gateway để tạo ra một URL tạm thời, an toàn cho phép người dùng tải file lên hoặc xuống trực tiếp từ S3.">
+                        <img src="images/lambda-icon.png" alt="Lambda" class="box-icon"
+                            style="width: 24px; height: 24px;">
+                        <strong>getPresignedURL</strong>
+                        <p>Tạo URL bảo mật để truy cập S3.</p>
+                    </div>
+                </div>
+
+                <!-- Cột 5: Lớp Trình bày -->
+                <div class="arch-column" data-layer="presentation">
+                    <h3>Lớp Trình bày</h3>
+                    <div class="arch-box frontend" id="box-web-app"
+                        data-tooltip="Ứng dụng một trang (SPA) được xây dựng bằng HTML, CSS, JS. Tương tác với người dùng, gọi API để lấy dữ liệu và trực quan hóa chúng.">
+                        <i class="fas fa-laptop-code box-icon"></i>
+                        <strong>Giao diện Web</strong>
+                        <p>Trực quan hóa dữ liệu, tương tác với người dùng và gọi Gemini API để có thông tin chuyên sâu.
+                        </p>
+                    </div>
+                    <div class="arch-box user" id="box-user"
+                        data-tooltip="Người dùng cuối, chẳng hạn như nhà nghiên cứu hoặc quản trị viên hệ thống, tương tác với giao diện web.">
+                        <i class="fas fa-user box-icon"></i>
+                        <strong>Người dùng</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="chat-widget-container">
+        <button id="chat-toggle-button" aria-label="Mở chat">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon-chat">
+                <path fill-rule="evenodd"
+                    d="M4.804 21.644A6.707 6.707 0 0 0 6 21.75a6.75 6.75 0 0 0 6.75-6.75v-1.5c0-3.52 2.312-6.442 5.426-7.141a.75.75 0 0 1 .824.722v.056c0 .414-.336.75-.75.75H12a.75.75 0 0 1-.75-.75V6a.75.75 0 0 1 .75-.75h3.418c.414 0 .75.336.75.75v6.586a.75.75 0 0 1-.22.53l-1.06 1.06a.75.75 0 0 1-1.06 0l-1.06-1.06a.75.75 0 0 1-.22-.53V9.75a.75.75 0 0 1 1.5 0v2.25a.75.75 0 0 1-.75.75h-3a.75.75 0 0 1-.75-.75V6.75a.75.75 0 0 1 .75-.75H12a6.75 6.75 0 0 0-6.75 6.75v1.5c0 3.52-2.312 6.442-5.426 7.141a.75.75 0 0 1-.824-.722v-.056c0-.414.336-.75.75-.75H3.75a.75.75 0 0 1 .75.75v1.944Z"
+                    clip-rule="evenodd" />
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon-close"
+                style="display: none;">
+                <path fill-rule="evenodd"
+                    d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z"
+                    clip-rule="evenodd" />
+            </svg>
+        </button>
+        <div id="chat-window" class="chat-window" style="display: none;">
+            <div class="chat-header">
+                <h3>Trợ lý IoT AI</h3>
+                <p>Hỏi tôi về dữ liệu, nhật ký, người dùng...</p>
+            </div>
+            <div id="chat-messages" class="chat-messages">
+                <div class="message bot-message">
+                    <div class="message-content">
+                        Xin chào! Tôi có thể giúp gì cho bạn? (ví dụ: "trạm 1 hôm nay", "liệt kê người dùng", "kiểm tra
+                        nhật ký")
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Nhập câu lệnh của bạn...">
+                <button id="chat-send-button" aria-label="Gửi">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.98.75.75 0 0 0 0-1.212A60.517 60.517 0 0 0 3.478 2.404Z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button id="scroll-to-top" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <div id="footer-placeholder"></div>
+
+    <!--<script src="assets/js/auth-protect.js"></script>-->
+    <script src="assets/js/i18n.js" defer></script>
+    <script src="assets/js/main.js" defer></script>
+    <!-- ✨ [MỚI] Thêm thư viện Chart.js và plugin zoom/pan -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"
+        defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js" defer></script>
+    <script src="assets/js/workflow.js" defer></script>
+    <script src="assets/js/chat-ai.js" defer></script>
+
+</body>
+
+</html>

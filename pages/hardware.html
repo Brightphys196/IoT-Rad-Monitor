@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ✨ [MỚI] Cấu hình Favicon & PWA -->
+    <link rel="apple-touch-icon" sizes="57x57" href="../images/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="../images/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="../images/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="../images/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="../images/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="../images/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="../images/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="../images/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../images/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="../images/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="../ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Chi tiết Phần cứng - Hệ Thống Quan Trắc Phóng Xạ</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/hardware.css">
+    <!-- ✨ [SỬA LỖI] Thêm thư viện Font Awesome để hiển thị icon trên header -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- ✨ [MỚI] Script bảo vệ trang, yêu cầu đăng nhập -->
+    <!-- <script src="../assets/js/auth-protect.js"></script> -->
+</head>
+
+<body class="hardware-page">
+    <div id="header-placeholder"></div>
+
+    <main class="page-container">
+        <!-- Hero/Title Section -->
+        <section class="hardware-section"
+            style="background: radial-gradient(circle at center, #e0e7ff, #f3f4f6); min-height: 50vh;">
+            <div class="page-title" style="z-index: 2; position: relative;">
+                <h1>Thành Phần Phần Cứng</h1>
+                <p>Khám phá các linh kiện điện tử cốt lõi tạo nên trạm quan trắc IoT.</p>
+            </div>
+        </section>
+
+        <!-- ✨ [MỚI] Station Configurations -->
+        <section class="hardware-section" style="background: #fff;">
+            <div class="page-title">
+                <h2>Cấu Hình Các Trạm</h2>
+                <p>Hệ thống bao gồm 3 phiên bản phần cứng khác nhau.</p>
+            </div>
+
+            <div class="hardware-grid"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; padding: 2rem; max-width: 1200px; margin: 0 auto;">
+
+                <!-- Station 1 & 2 -->
+                <div class="hardware-content-card glass-panel" style="margin: 0;">
+                    <div class="hardware-image-container" style="height: 200px;">
+                        <img src="../images/ESP8266 NodeMCU.jpg" alt="Station 1 & 2" style="object-fit: contain;">
+                    </div>
+                    <div class="hardware-info">
+                        <h3>Trạm 1 & 2 (Tiêu Chuẩn)</h3>
+                        <p class="hardware-role">ESP8266 + LCD 16x2</p>
+                        <ul class="specs-list">
+                            <li><i class="fas fa-microchip"></i> MCU: ESP8266 NodeMCU</li>
+                            <li><i class="fas fa-tv"></i> Màn hình: LCD 1602 (I2C)</li>
+                            <li><i class="fas fa-code"></i> Lib: LiquidCrystal_I2C</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Station 3 -->
+                <div class="hardware-content-card glass-panel" style="margin: 0;">
+                    <div class="hardware-image-container" style="height: 200px;">
+                        <!-- Using generic icon/image as specific one not provided, reusing NodeMCU but focusing on OLED description -->
+                        <div
+                            style="font-size: 5rem; color: #3b82f6; display: flex; justify-content: center; align-items: center; height: 100%;">
+                            <i class="fas fa-tablet-alt"></i>
+                        </div>
+                    </div>
+                    <div class="hardware-info">
+                        <h3>Trạm 3 (Nhỏ Gọn)</h3>
+                        <p class="hardware-role">ESP8266 + OLED 0.96"</p>
+                        <ul class="specs-list">
+                            <li><i class="fas fa-microchip"></i> MCU: ESP8266 NodeMCU</li>
+                            <li><i class="fas fa-tv"></i> Màn hình: OLED 0.96" SSD1306</li>
+                            <li><i class="fas fa-code"></i> Lib: Adafruit_SSD1306</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Station 4 -->
+                <div class="hardware-content-card glass-panel" style="margin: 0; border: 2px solid #f59e0b;">
+                    <div class="hardware-image-container" style="height: auto; min-height: 200px; padding: 10px;">
+                        <!-- Image Grid for Station 4 -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                            <img src="../images/esp32.webp" style="width: 100%; border-radius: 8px;">
+                            <img src="../images/esp32-1.webp" style="width: 100%; border-radius: 8px;">
+                            <img src="../images/esp32-2.webp" style="width: 100%; border-radius: 8px;">
+                            <img src="../images/esp32-4.webp" style="width: 100%; border-radius: 8px;">
+                        </div>
+                    </div>
+                    <div class="hardware-info">
+                        <h3>Trạm 4 (Nâng Cao)</h3>
+                        <p class="hardware-role">ESP32 + TFT 1.9" Color</p>
+                        <ul class="specs-list">
+                            <li><i class="fas fa-microchip"></i> MCU: <strong>ESP32</strong> (Dual Core)</li>
+                            <li><i class="fas fa-tv"></i> Màn hình: TFT LCD 1.9" ST7789</li>
+                            <li><i class="fas fa-exclamation-triangle"></i> Cảnh báo: Màu sắc (Xanh/Cam/Đỏ)</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ESP32 Section -->
+        <section class="hardware-section" style="background-image: url('../images/esp32-4.webp');">
+            <div class="hardware-content-card glass-panel shadow-hover">
+                <div class="hardware-image-container">
+                    <!-- ✨ Tối ưu hóa: Thêm lazy-loading và kích thước cho ảnh -->
+                    <img src="../images/esp32-4.webp" alt="ESP32" loading="lazy" decoding="async" width="300"
+                        height="300">
+                </div>
+                <div class="hardware-info">
+                    <h3>ESP32/ESP8266</h3>
+                    <p class="hardware-role">Bộ não của hệ thống</p>
+                    <p>Vi điều khiển tích hợp Wi-Fi, chịu trách nhiệm thu thập dữ liệu từ các cảm biến, xử lý sơ bộ
+                        và
+                        gửi lên nền tảng AWS IoT Core một cách an toàn thông qua giao thức MQTT.</p>
+                    <ul class="specs-list">
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M5 12.55a11 11 0 0 1 14.08 0" />
+                                <path d="M1.42 9a16 16 0 0 1 21.16 0" />
+                                <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+                                <line x1="12" x2="12.01" y1="20" y2="20" />
+                            </svg>
+                            <strong>Kết nối:</strong> Wi-Fi 802.11 b/g/n
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            </svg>
+                            <strong>Giao thức:</strong> MQTT (TLS 1.2)
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                            </svg>
+                            <strong>Nguồn điện:</strong> 5V (qua cổng Micro USB)
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="16 18 22 12 16 6" />
+                                <polyline points="8 6 2 12 8 18" />
+                            </svg>
+                            <strong>Ngôn ngữ:</strong> C++/Arduino
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Geiger Section -->
+        <section class="hardware-section" style="background-image: url('../images/geiger-counter.jpg');">
+            <div class="hardware-content-card">
+                <div class="hardware-image-container">
+                    <!-- ✨ Tối ưu hóa: Thêm lazy-loading và kích thước cho ảnh -->
+                    <img src="../images/geiger-counter.jpg" alt="Cảm biến phóng xạ Geiger" loading="lazy"
+                        decoding="async" width="300" height="300">
+                </div>
+                <div class="hardware-info">
+                    <h3>Cảm biến Phóng xạ (Ống Geiger-Müller)</h3>
+                    <p class="hardware-role">Cảm biến chính</p>
+                    <p>Sử dụng ống Geiger-Müller J305βγ để phát hiện các bức xạ ion hóa (tia Beta và Gamma). Mạch đi
+                        kèm
+                        sẽ đếm số xung (CPM - Counts Per Minute) và chuyển đổi thành suất liều tương đương (µSv/h).
+                    </p>
+                    <ul class="specs-list">
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+                                <path d="M22 12A10 10 0 0 0 12 2v10z" />
+                            </svg>
+                            <strong>Loại ống:</strong> J305βγ
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                <path d="m14.5 9.5-5 5" />
+                                <path d="m9.5 9.5 5 5" />
+                            </svg>
+                            <strong>Phát hiện:</strong> Tia Beta (β), Gamma (γ)
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                            </svg>
+                            <strong>Điện áp hoạt động:</strong> 380-450V (được tạo bởi module)
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M21.25 7.17 12 12l-9.25-4.83L12 2.34l9.25 4.83Z" />
+                                <path d="M12 12v9.69" />
+                                <path d="M21.25 7.17 12 12l9.25 4.83L12 21.69l-9.25-4.83Z" />
+                            </svg>
+                            <strong>Đơn vị đo:</strong> CPM, µSv/h
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- DHT11 Section -->
+        <section class="hardware-section" style="background-image: url('../images/dht11.jpg');">
+            <div class="hardware-content-card">
+                <div class="hardware-image-container">
+                    <!-- ✨ Tối ưu hóa: Thêm lazy-loading và kích thước cho ảnh -->
+                    <img src="../images/dht11.jpg" alt="Cảm biến DHT11" loading="lazy" decoding="async" width="100"
+                        height="100">
+                </div>
+                <div class="hardware-info">
+                    <h3>Cảm biến Nhiệt độ & Độ ẩm DHT11</h3>
+                    <p class="hardware-role">Cảm biến môi trường</p>
+                    <p>Cảm biến kỹ thuật số chi phí thấp dùng để đo nhiệt độ và độ ẩm tương đối của không khí xung
+                        quanh. Dữ liệu này cung cấp bối cảnh môi trường cho các phép đo phóng xạ.</p>
+                    <ul class="specs-list">
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z" />
+                            </svg>
+                            <strong>Dải nhiệt độ:</strong> 0-50°C (độ chính xác ±2°C)
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path
+                                    d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" />
+                            </svg>
+                            <strong>Dải độ ẩm:</strong> 20-90% RH (độ chính xác ±5%)
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M17 18a4 4 0 0 0-4-4h-2a4 4 0 0 0-4 4v1a4 4 0 0 0 4 4h2a4 4 0 0 0 4-4v-1z" />
+                            </svg>
+                            <strong>Giao tiếp:</strong> 1-Wire
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="software-architecture-section glass-panel">
+            <div class="page-title">
+
+                <h2>Kiến trúc Phần mềm & Luồng Dữ liệu</h2>
+                <p>Mô hình tổng quan về cách dữ liệu được thu thập, xử lý và hiển thị.</p>
+            </div>
+
+            <div class="data-flow-diagram">
+                <!-- Step 1 -->
+                <div class="flow-step">
+                    <div class="flow-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                            <line x1="7" y1="2" x2="7" y2="22"></line>
+                            <line x1="17" y1="2" x2="17" y2="22"></line>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <line x1="2" y1="7" x2="7" y2="7"></line>
+                            <line x1="2" y1="17" x2="7" y2="17"></line>
+                            <line x1="17" y1="17" x2="22" y2="17"></line>
+                            <line x1="17" y1="7" x2="22" y2="7"></line>
+                        </svg>
+                    </div>
+                    <h4>1. Thiết bị Nhúng</h4>
+                    <p>ESP32 đọc dữ liệu từ cảm biến và gửi qua MQTT.</p>
+                </div>
+                <div class="flow-arrow">→</div>
+
+                <!-- Step 2 -->
+                <div class="flow-step">
+                    <div class="flow-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+                        </svg>
+                    </div>
+                    <h4>2. AWS IoT Core</h4>
+                    <p>Tiếp nhận và xác thực tin nhắn MQTT một cách an toàn.</p>
+                </div>
+                <div class="flow-arrow">→</div>
+
+                <!-- Step 3 -->
+                <div class="flow-step">
+                    <div class="flow-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 17l6-10 6 10"></path>
+                            <path d="M14 13h-4"></path>
+                        </svg>
+                    </div>
+                    <h4>3. AWS Lambda</h4>
+                    <p>Được kích hoạt bởi IoT Rule để xử lý và lưu trữ dữ liệu.</p>
+                </div>
+                <div class="flow-arrow">→</div>
+
+                <!-- Step 4 -->
+                <div class="flow-step">
+                    <div class="flow-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                        </svg>
+                    </div>
+                    <h4>4. Amazon DynamoDB</h4>
+                    <p>Lưu trữ dữ liệu chuỗi thời gian hiệu suất cao.</p>
+                </div>
+                <div class="flow-arrow">→</div>
+
+                <!-- Step 5 -->
+                <div class="flow-step">
+                    <div class="flow-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 8V4H8" />
+                            <rect x="4" y="4" width="16" height="16" rx="2" />
+                            <path d="M2 14h2" />
+                            <path d="M20 14h2" />
+                            <path d="M14 2v2" />
+                            <path d="M14 20v2" />
+                        </svg>
+                    </div>
+                    <h4>5. API Gateway</h4>
+                    <p>Tạo REST API để frontend có thể truy vấn dữ liệu.</p>
+                </div>
+                <div class="flow-arrow">→</div>
+
+                <!-- Step 6 -->
+                <div class="flow-step">
+                    <div class="flow-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                    </div>
+                    <h4>6. Giao diện Web</h4>
+                    <p>Trực quan hóa dữ liệu bằng biểu đồ và đồng hồ đo.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div id="footer-placeholder"></div>
+
+    <script src="../assets/js/i18n.js"></script>
+    <script src="../assets/js/main.js" defer></script>
+    <script src="../assets/js/hardware-3d.js" defer></script>
+</body>
+
+</html>

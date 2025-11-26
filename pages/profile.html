@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ✨ [MỚI] Cấu hình Favicon & PWA -->
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../images/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16.png">
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+
+    <link rel="manifest" href="../manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="../ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Hồ Sơ Của Tôi - Giám Sát IoT</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/auth.css"> <!-- Tái sử dụng CSS từ trang đăng nhập -->
+    <link rel="stylesheet" href="../assets/css/profile.css"> <!-- CSS mới cho trang hồ sơ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- ✨ [SỬA LỖI] Thêm thư viện Font Awesome để hiển thị icon trong modal -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+
+    <!-- <script src="../assets/js/auth-protect.js"></script> --> <!-- BẢO VỆ TRANG NÀY -->
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="page-container">
+        <main class="profile-container">
+            <h1>Hồ Sơ Của Tôi</h1>
+            <!-- ✨ [MỚI] Bố cục 2 cột cho trang hồ sơ -->
+            <div class="profile-layout">
+                <!-- Cột bên trái cho avatar và thông tin cơ bản -->
+                <aside class="profile-sidebar">
+                    <div class="profile-card avatar-card glass-panel animate-on-scroll">
+                        <div class="avatar-uploader">
+                            <img src="https://placehold.co/150x150/e9ecef/adb5bd?text=Avatar" alt="Avatar"
+                                id="avatar-preview" class="avatar-image">
+                            <label for="avatar-upload" class="avatar-upload-button">
+                                Đổi Ảnh
+                                <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+                            </label>
+                        </div>
+                        <div class="avatar-info">
+                            <h3 id="profile-display-name">Đang tải...</h3>
+                            <p id="profile-display-email">@email</p>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Cột chính cho các form cập nhật -->
+                <div class="profile-main">
+                    <!-- Vùng Cập nhật Thông tin -->
+                    <div class="profile-card glass-panel animate-on-scroll" data-animation-delay="100">
+                        <h3>Thông Tin Cá Nhân</h3>
+                        <form id="update-profile-form">
+                            <div class="input-group">
+                                <label for="profile-name">Họ và Tên</label>
+                                <input type="text" id="profile-name" placeholder="Ví dụ: Nguyễn Văn A">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="profile-birthdate">Ngày sinh</label>
+                                    <input type="date" id="profile-birthdate">
+                                </div>
+                                <div class="input-group">
+                                    <label for="profile-gender">Giới tính</label>
+                                    <select id="profile-gender">
+                                        <option value="">Chọn giới tính</option>
+                                        <option value="Male">Nam</option>
+                                        <option value="Female">Nữ</option>
+                                        <option value="Other">Khác</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="profile-phone">Số điện thoại</label>
+                                <input type="tel" id="profile-phone" placeholder="+84123456789 (bắt đầu bằng +84)">
+                            </div>
+
+                            <div class="input-group">
+                                <label for="profile-plan">Gói người dùng</label>
+                                <!-- ✨ [MỚI] Thêm nút Nâng cấp -->
+                                <div class="plan-container">
+                                    <input type="text" id="profile-plan" value="Free" disabled>
+                                    <button type="button" id="upgrade-plan-btn" class="upgrade-btn">Nâng cấp Gói
+                                        🚀</button>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="profile-email">Email (Tên đăng nhập)</label>
+                                <input type="email" id="profile-email" disabled>
+                                <small>Bạn không thể thay đổi email (tên đăng nhập) sau khi đăng ký.</small>
+                            </div>
+
+                            <div id="profile-error" class="error-hidden"></div>
+                            <button type="submit" class="auth-button" id="update-profile-button">Lưu Thay Đổi</button>
+                        </form>
+                    </div>
+
+                    <!-- Vùng Đổi Mật khẩu -->
+                    <div class="profile-card glass-panel animate-on-scroll" data-animation-delay="200">
+                        <h3>Đổi Mật Khẩu</h3>
+                        <form id="change-password-form">
+                            <div class="input-group">
+                                <label for="old-password">Mật khẩu cũ</label>
+                                <input type="password" id="old-password" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="new-password">Mật khẩu mới</label>
+                                <input type="password" id="new-password" required>
+                            </div>
+                            <div id="password-error" class="error-hidden"></div>
+                            <button type="submit" class="auth-button" id="change-password-button">Đổi Mật Khẩu</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ✨ [MỚI] Modal Nâng cấp Gói -->
+            <!-- ✨ [SỬA LỖI] Cập nhật cấu trúc modal để tương thích hoàn toàn với Bootstrap 5 -->
+
+    </div>
+    </main>
+    </div>
+    <div id="upgrade-plan-modal" class="modal overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="upgradeModalLabel">Nâng cấp Gói Dịch vụ của bạn</h3>
+                <!-- Sử dụng nút đóng chuẩn của Bootstrap. `data-bs-dismiss` sẽ tự động đóng modal. -->
+                <button id="upgrade-modal-close-btn" class="close-btn" data-bs-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Lớp modal-body đã có sẵn, chỉ cần giữ lại nội dung bên trong -->
+                <p class="modal-subtitle">Chọn gói phù hợp với nhu cầu của bạn để mở khóa các tính năng cao
+                    cấp.</p>
+                <div class="pricing-plans-container">
+                    <!-- Gói Free -->
+                    <div class="plan-card glass-panel shadow-hover animate-on-scroll" data-animation-delay="300"
+                        id="plan-card-free">
+                        <div class="plan-header">
+                            <h4>Free</h4>
+                            <p class="plan-price">0đ <span>/ tháng</span></p>
+                        </div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> Xem dữ liệu thời gian thực</li>
+                            <li><i class="fas fa-check"></i> Lịch sử dữ liệu 7 ngày</li>
+                            <li><i class="fas fa-times"></i> Phân tích AI (Giới hạn)</li>
+                            <li><i class="fas fa-times"></i> Xuất dữ liệu</li>
+                        </ul>
+                        <button class="plan-button" disabled>Gói Hiện tại</button>
+                    </div>
+                    <!-- Gói Pro -->
+                    <div class="plan-card popular glass-panel shadow-hover animate-on-scroll" data-animation-delay="400"
+                        id="plan-card-pro">
+                        <div class="plan-tag">Phổ biến</div>
+                        <div class="plan-header">
+                            <h4>Pro</h4>
+                            <p class="plan-price">200.000đ <span>/ tháng</span></p>
+                        </div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> Xem dữ liệu thời gian thực</li>
+                            <li><i class="fas fa-check"></i> Lịch sử dữ liệu 1 năm</li>
+                            <li><i class="fas fa-check"></i> Phân tích AI không giới hạn</li>
+                            <li><i class="fas fa-check"></i> Xuất dữ liệu (CSV)</li>
+                        </ul>
+                        <button class="plan-button" data-plan="Pro">Yêu cầu Nâng cấp</button>
+                    </div>
+                    <!-- Gói Enterprise -->
+                    <div class="plan-card glass-panel shadow-hover animate-on-scroll" data-animation-delay="500"
+                        id="plan-card-enterprise">
+                        <div class="plan-header">
+                            <h4>Enterprise</h4>
+                            <p class="plan-price">Liên hệ</p>
+                        </div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> Mọi tính năng của gói Pro</li>
+                            <li><i class="fas fa-check"></i> Lịch sử dữ liệu không giới hạn</li>
+                            <li><i class="fas fa-check"></i> Hỗ trợ ưu tiên</li>
+                            <li><i class="fas fa-check"></i> Tùy chỉnh theo yêu cầu</li>
+                        </ul>
+                        <button class="plan-button" data-plan="Enterprise">Yêu cầu Nâng cấp</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="footer-placeholder"></div>
+    <div id="toast-container"></div>
+
+    <script src="../assets/js/i18n.js"></script>
+    <script src="../assets/js/toast.js" defer></script>
+    <script src="../assets/js/main.js" defer></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/profile.js" defer></script>
+    <!-- ✨ [SỬA LỖI] Chỉ giữ lại script dành riêng cho trang này -->
+</body>
+
+</html>

@@ -1,0 +1,469 @@
+/* Data Analysis Page Styles */
+/* ✨ [MỚI] Kiểu dáng cho giao diện thống kê dạng tab */
+#statistics-results {
+    display: flex;
+    flex-direction: column;
+}
+
+.stats-tabs-container {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+    /* Cho phép cuộn ngang nếu có quá nhiều tab */
+    overflow-x: auto;
+    /* Ẩn thanh cuộn trên các trình duyệt hỗ trợ */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.stats-tabs-container::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, and Opera */
+}
+
+.stat-tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--text-color-muted);
+    font-weight: 600;
+    position: relative;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.stat-tab:hover {
+    color: var(--text-color);
+}
+
+.stat-tab.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.stat-content-pane {
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+
+.stat-content-pane.active {
+    display: block;
+}
+
+/* ✨ [CẢI TIẾN] Giao diện thống kê dạng thẻ logic hơn */
+.analysis-layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    /* Căn các cột lên trên cùng */
+    margin-top: 30px;
+}
+
+.analysis-main-column {
+    flex: 2.5;
+    /* Cột chính rộng hơn */
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+    /* Sửa lỗi flexbox overflow */
+}
+
+.analysis-side-column {
+    flex: 1;
+    /* Cột phụ hẹp hơn */
+    position: sticky;
+    top: 94px;
+    /* Vị trí dính, dưới header (70px) + padding (24px) */
+    min-width: 0;
+}
+
+/* Ghi đè style cũ để phù hợp layout mới */
+.page-container>main {
+    /* ✨ [CẢI TIẾN] Mở rộng layout để lấp đầy không gian */
+    max-width: none;
+    /* Bỏ giới hạn chiều rộng */
+    margin: 0;
+    padding: 24px 40px;
+    /* Tăng padding ngang để nội dung không bị sát lề */
+}
+
+/* Bỏ margin-bottom cho section cuối cùng trong cột chính */
+.analysis-main-column section:last-child {
+    margin-bottom: 0;
+}
+
+/* Section Styling */
+.data-selection-section,
+.data-viz-section,
+.statistics-section {
+    background: var(--card-background);
+    /* Sử dụng biến toàn cục */
+    border-radius: 24px;
+    /* Tăng độ bo tròn để mềm mại hơn */
+    padding: 25px 30px;
+    /* Tăng padding để thoáng hơn */
+    margin-bottom: 0;
+    /* Bỏ margin vì đã có gap trong layout */
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px var(--shadow-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.data-selection-section:hover,
+.data-viz-section:hover,
+.statistics-section:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px var(--card-hover-shadow);
+}
+
+section h2 {
+    margin: 0 0 20px 0;
+    color: var(--text-color);
+    font-size: 1.5rem;
+}
+
+
+/* Controls Styling */
+.selection-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    /* Tăng khoảng cách giữa các nhóm control */
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    /* Tăng khoảng cách giữa label và input */
+}
+
+.control-group label {
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+
+/* Date Input Styling */
+.date-inputs {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-grow: 1;
+    /* Cho phép các input group co giãn đều */
+}
+
+.input-group label {
+    font-size: 0.95rem;
+    color: var(--text-color-muted);
+}
+
+input[type="datetime-local"] {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    /* Đồng bộ bo góc */
+    background: var(--background-color);
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="datetime-local"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+
+/* Station Selection Styling */
+.station-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.station-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.checkbox-container:hover {
+    border-color: var(--primary-color);
+    background-color: var(--card-background);
+}
+
+.checkbox-label {
+    color: var(--text-color);
+}
+
+
+/* Button Styling */
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.action-buttons button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.primary-button,
+.secondary-button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    /* Đồng bộ bo góc */
+    border: none;
+    font-weight: 600;
+    /* Tăng độ đậm cho dễ đọc */
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    display: inline-flex;
+    /* Cho phép icon và text căn giữa */
+    align-items: center;
+    gap: 8px;
+}
+
+.primary-button {
+    background: var(--primary-color);
+    color: white;
+    box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.2);
+}
+
+.primary-button:hover,
+.secondary-button:hover {
+    background: var(--primary-color-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.3);
+}
+
+.secondary-button {
+    background: var(--background-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.secondary-button:hover:not(#resetZoomBtn) {
+    background: var(--card-background);
+    transform: translateY(-1px);
+}
+
+/* Chart Controls */
+.chart-controls {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+/* ✨ [MỚI] Thêm khoảng cách cho nút reset zoom */
+#resetZoomBtn {
+    margin-left: 10px;
+}
+
+.chart-controls select {
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    /* Đồng bộ bo góc */
+    background: var(--background-color);
+    color: var(--text-color);
+    min-width: 150px;
+    font-size: 1rem;
+}
+
+
+/* Chart Container */
+.chart-container {
+    width: 96%;
+    height: 450px;
+    /* Tăng chiều cao biểu đồ */
+    position: relative;
+    margin-bottom: 24px;
+}
+
+/* ✨ [SỬA LỖI] Đảm bảo canvas của biểu đồ luôn nằm gọn trong container */
+.chart-container canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    /* Ghi đè style inline của Chart.js */
+    height: 100% !important;
+}
+
+/* ✨ [MỚI] Kiểu dáng cho giao diện thống kê dạng tab */
+#statistics-results {
+    display: flex;
+    flex-direction: column;
+}
+
+.stats-tabs-container {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+    /* Cho phép cuộn ngang nếu có quá nhiều tab */
+    overflow-x: auto;
+    /* Ẩn thanh cuộn trên các trình duyệt hỗ trợ */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.stats-tabs-container::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, and Opera */
+}
+
+.stat-tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--text-color-muted);
+    font-weight: 600;
+    position: relative;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.stat-tab:hover {
+    color: var(--text-color);
+}
+
+.stat-tab.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.stat-content-pane {
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+
+.stat-content-pane.active {
+    display: block;
+}
+
+/* ✨ [CẢI TIẾN] Giao diện thống kê dạng thẻ logic hơn */
+.stat-content-pane {
+    display: none;
+    /* ✨ [SỬA LỖI] Mặc định ẩn tất cả các thẻ nội dung */
+    animation: fadeIn 0.4s ease;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.stat-content-pane.active {
+    display: grid;
+    /* Chỉ hiển thị thẻ nội dung đang được chọn dưới dạng lưới */
+}
+
+.param-stats-card {
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.param-stats-card h4 {
+    margin: 0 0 15px 0;
+    font-size: 1.1em;
+    color: var(--heading-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.stats-values-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.stat-value-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value-label {
+    font-size: 0.85em;
+    color: var(--text-color-muted);
+    margin-bottom: 4px;
+}
+
+.stat-value-number {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: var(--heading-color);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+
+@media (max-width: 1024px) {
+    .analysis-layout {
+        flex-direction: column;
+        /* Xếp chồng các cột trên tablet */
+    }
+
+    .analysis-side-column {
+        position: static;
+        /* Bỏ chế độ dính */
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-container>main {
+        padding: 16px;
+    }
+
+    .stats-container {
+        grid-template-columns: 1fr;
+    }
+
+    .date-inputs {
+        flex-direction: column;
+    }
+}
