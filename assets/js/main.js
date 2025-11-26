@@ -6,7 +6,7 @@ const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 const getCurrentTheme = () => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) return savedTheme;
-    return prefersDarkScheme.matches ? 'dark' : 'light';
+    return 'light'; // ✨ [CẬP NHẬT] Mặc định luôn là Light Mode
 };
 
 function setTheme(theme) {
