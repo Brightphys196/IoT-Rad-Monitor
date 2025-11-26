@@ -43,10 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // ✨ [CẬP NHẬT] Tự động xác định Redirect URI dựa trên môi trường
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
-    // Nếu là Local: Giữ nguyên port hiện tại (thường là 5500 hoặc 5501 với Live Server)
-    // Nếu là Prod: Dùng link Amplify
+    // Nếu là Local: Luôn dùng localhost:5500 để khớp với Cognito Whitelist
+    // (Tránh trường hợp chạy 127.0.0.1:5500 bị lỗi Redirect Mismatch)
     const APP_BASE_URL = isLocal
-        ? `${window.location.protocol}//${window.location.host}`
+        ? 'http://localhost:5500'
         : 'https://main.d17frqb5qnxe51.amplifyapp.com';
 
     const REDIRECT_URI = `${APP_BASE_URL}/auth/auth-callback.html`;

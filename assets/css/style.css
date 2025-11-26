@@ -6004,3 +6004,77 @@ button:hover,
     background: rgba(0, 0, 0, 0.3);
     border-color: rgba(255, 255, 255, 0.1);
 }
+
+/* =================================================================
+   [MỚI] CẬP NHẬT WORKFLOW DIAGRAM (Z-INDEX & LINES)
+   ================================================================= */
+.architecture-diagram {
+    position: relative;
+    z-index: 1;
+    /* Tạo stacking context mới */
+}
+
+/* Đảm bảo SVG nằm dưới cùng */
+/* Đảm bảo SVG nằm dưới cùng nhưng không bị ẩn bởi background cha */
+.connector-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    /* Đặt là 0 thay vì -1 để tránh bị ẩn sau background */
+    pointer-events: none;
+    /* Không chặn click chuột */
+}
+
+/* Đảm bảo các hộp nằm trên SVG */
+.arch-box {
+    position: relative;
+    z-index: 1;
+    /* Đặt cao hơn SVG */
+    background-color: var(--card-background);
+    /* Đảm bảo nền không trong suốt để che đường kẻ */
+}
+
+/* Style cho đường nối thẳng */
+.connector-line {
+    fill: none;
+    stroke: var(--text-muted);
+    /* Sửa tên biến: --text-color-muted -> --text-muted */
+    stroke-width: 2px;
+    opacity: 0.5;
+    /* Tăng độ đậm để dễ nhìn hơn */
+    transition: all 0.3s ease;
+    /* Bo góc nhẹ cho đường gấp khúc nếu muốn (nhưng SVG path L không tự bo) */
+    stroke-linejoin: round;
+}
+
+.connector-line.active {
+    opacity: 1;
+    stroke-width: 3px;
+    filter: drop-shadow(0 0 5px var(--primary-color));
+}
+/* --- Màu sắc riêng cho từng loại đường nối --- */
+.connector-line--ingest { stroke: var(--connector-color-ingest); }
+.connector-line--processing { stroke: var(--connector-color-processing); }
+.connector-line--response { stroke: var(--connector-color-response); }
+.connector-line--request { stroke: var(--connector-color-request); }
+.connector-line--ai { stroke: var(--connector-color-ai); }
+.connector-line--storage { stroke: var(--connector-color-storage); }
+
+/* Màu cho chấm tròn (marker) và chấm chạy (dot) */
+.connector-arrow-circle--ingest, .connector-dot--ingest { fill: var(--connector-color-ingest); }
+.connector-arrow-circle--processing, .connector-dot--processing { fill: var(--connector-color-processing); }
+.connector-arrow-circle--response, .connector-dot--response { fill: var(--connector-color-response); }
+.connector-arrow-circle--request, .connector-dot--request { fill: var(--connector-color-request); }
+.connector-arrow-circle--ai, .connector-dot--ai { fill: var(--connector-color-ai); }
+.connector-arrow-circle--storage, .connector-dot--storage { fill: var(--connector-color-storage); }
+
+/* Tăng cường hiệu ứng Active */
+.connector-line.active {
+    opacity: 1;
+    stroke-width: 4px; /* Tăng độ dày */
+    filter: drop-shadow(0 0 8px currentColor); /* Glow mạnh hơn theo màu hiện tại */
+    z-index: 10; /* Cố gắng đưa lên trên (dù trong SVG z-index không hoạt động như HTML nhưng stroke-width to hơn sẽ đè lên) */
+}

@@ -31,8 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { from: 'box-lambda-chat-ai', to: 'box-api-gateway', type: 'response' },
         { from: 'box-api-gateway', to: 'box-lambda-presigned-url', type: 'request' },
         { from: 'box-lambda-presigned-url', to: 'box-api-gateway', type: 'response' },
-        { from: 'box-web-app', to: 'box-s3-storage', type: 'storage' },
-        { from: 'box-s3-storage', to: 'box-web-app', type: 'storage' },
+        { from: 'box-web-app', to: 'box-github-amplify', type: 'storage' },
+        { from: 'box-github-amplify', to: 'box-web-app', type: 'storage' },
     ];
 
     let isLegendLocked = false;
@@ -86,6 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- HÀM TẠO DÂY NỐI (Đã sửa lỗi reference) ---
+    // --- HÀM TẠO DÂY NỐI (Đã sửa lỗi logic & chuyển sang Orthogonal) ---
     function createSmartConnector(el1, el2, id, fanInfo, type) {
         const diagramRect = diagram.getBoundingClientRect();
         const rect1 = el1.getBoundingClientRect();
@@ -99,8 +100,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const isHorizontal = Math.abs(rect1.left - rect2.left) > Math.abs(rect1.top - rect2.top);
-        let start = {}, end = {}, c1 = {}, c2 = {};
+        let start = {}, end = {};
 
+        // 1. Tính toán điểm đầu và cuối
         if (isHorizontal) {
             const isForward = rect1.left < rect2.left;
             const startY = rect1.top - diagramRect.top + calculateOffset(fanInfo.fromTotal, fanInfo.fromCurrent, rect1.height);
@@ -108,11 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             start = { x: isForward ? rect1.right - diagramRect.left : rect1.left - diagramRect.left, y: startY };
             end = { x: isForward ? rect2.left - diagramRect.left : rect2.right - diagramRect.left, y: endY };
-
-            const dist = Math.abs(end.x - start.x);
-            const curve = Math.max(dist * 0.5, 60);
-            c1 = { x: isForward ? start.x + curve : start.x - curve, y: start.y };
-            c2 = { x: isForward ? end.x - curve : end.x + curve, y: end.y };
         } else {
             const isDown = rect1.top < rect2.top;
             const startX = rect1.left - diagramRect.left + calculateOffset(fanInfo.fromTotal, fanInfo.fromCurrent, rect1.width);
@@ -120,16 +117,71 @@ document.addEventListener('DOMContentLoaded', () => {
 
             start = { x: startX, y: isDown ? rect1.bottom - diagramRect.top : rect1.top - diagramRect.top };
             end = { x: endX, y: isDown ? rect2.top - diagramRect.top : rect2.bottom - diagramRect.top };
-
-            const dist = Math.abs(end.y - start.y);
-            const curve = Math.max(dist * 0.5, 60);
-            c1 = { x: start.x, y: isDown ? start.y + curve : start.y - curve };
-            c2 = { x: end.x, y: isDown ? end.y - curve : end.y + curve };
         }
 
-        const pathData = `M ${start.x} ${start.y} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${end.x} ${end.y}`;
+        // 2. Tính toán đường đi (Orthogonal Path với Bo góc & Tách dòng)
+        let points = [];
+        const bundleOffset = (id % 5 - 2) * 12; // Tách các đường trùng nhau ra 12px
 
-        // 1. Line
+        if (isHorizontal) {
+            const midX = (start.x + end.x) / 2 + bundleOffset;
+            points = [
+                { x: start.x, y: start.y },
+                { x: midX, y: start.y },
+                { x: midX, y: end.y },
+                { x: end.x, y: end.y }
+            ];
+        } else {
+            const midY = (start.y + end.y) / 2 + bundleOffset;
+            points = [
+                { x: start.x, y: start.y },
+                { x: start.x, y: midY },
+                { x: end.x, y: midY },
+                { x: end.x, y: end.y }
+            ];
+        }
+
+        // Filter duplicate points to avoid zero-length segments which cause NaN in getRoundedPath
+        points = points.filter((p, i, arr) => {
+            if (i === 0) return true;
+            const prev = arr[i - 1];
+            // Only keep point if it's sufficiently different from the previous one
+            return Math.abs(p.x - prev.x) > 0.5 || Math.abs(p.y - prev.y) > 0.5;
+        });
+
+        // Hàm tạo đường dẫn có bo góc
+        const getRoundedPath = (pts, radius) => {
+            if (pts.length < 2) return '';
+            if (pts.length === 2) return `M ${pts[0].x} ${pts[0].y} L ${pts[1].x} ${pts[1].y}`;
+
+            let d = `M ${pts[0].x} ${pts[0].y}`;
+            for (let i = 1; i < pts.length - 1; i++) {
+                const p0 = pts[i - 1];
+                const p1 = pts[i];
+                const p2 = pts[i + 1];
+
+                const v1 = { x: p1.x - p0.x, y: p1.y - p0.y };
+                const len1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+                const v2 = { x: p2.x - p1.x, y: p2.y - p1.y };
+                const len2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+
+                const r = Math.min(radius, len1 / 2, len2 / 2);
+
+                const startX = p1.x - (v1.x / len1) * r;
+                const startY = p1.y - (v1.y / len1) * r;
+                const endX = p1.x + (v2.x / len2) * r;
+                const endY = p1.y + (v2.y / len2) * r;
+
+                d += ` L ${startX} ${startY} Q ${p1.x} ${p1.y} ${endX} ${endY}`;
+            }
+            d += ` L ${pts[pts.length - 1].x} ${pts[pts.length - 1].y}`;
+            return d;
+        };
+
+        const pathData = getRoundedPath(points, 15); // Bo góc bán kính 15px
+
+        // 3. Tạo SVG Elements
+        // Line
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         line.setAttribute('d', pathData);
         line.setAttribute('class', `connector-line connector-line--${type}`);
@@ -139,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
         line.style.strokeDasharray = length;
         line.style.strokeDashoffset = length;
 
-        // 2. Marker
+        // Marker
         const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
         marker.setAttribute('id', `arrow-${id}`);
         marker.setAttribute('viewBox', '0 0 12 12');
@@ -147,11 +199,11 @@ document.addEventListener('DOMContentLoaded', () => {
         marker.setAttribute('markerWidth', '6'); marker.setAttribute('markerHeight', '6');
         marker.setAttribute('orient', 'auto');
         const mCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        mCircle.setAttribute('cx', '6'); mCircle.setAttribute('cy', '6'); mCircle.setAttribute('r', '5');
+        mCircle.setAttribute('cx', '6'); mCircle.setAttribute('cy', '6'); mCircle.setAttribute('r', '3');
         mCircle.setAttribute('class', `connector-arrow-circle connector-arrow-circle--${type}`);
         marker.appendChild(mCircle);
 
-        // 3. Dot
+        // Dot
         const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         dot.setAttribute('r', '3');
         dot.setAttribute('class', `connector-dot connector-dot--${type}`);
@@ -160,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const duration = Math.max(1.5, length / 300);
         dot.style.animationDuration = `${duration}s`;
 
-        // ✨ [QUAN TRỌNG] Gắn trực tiếp tham chiếu dot vào line để tránh lỗi null
+        // Gắn tham chiếu dot vào line
         line.connectedDot = dot;
 
         return { line, marker, dot };

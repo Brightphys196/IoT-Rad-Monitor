@@ -1002,11 +1002,83 @@
             </div>
         </section>
 
+        <!-- Slide 5: Deployment Workflow (New) -->
+        <section class="slide-section" id="slide-deployment">
+            <div class="slide-content">
+                <div class="slide-header">
+                    <h2 class="slide-title">5. Quy trình CI/CD & Hosting</h2>
+                    <p class="slide-subtitle">Tự động hóa triển khai với GitHub & AWS Amplify</p>
+                </div>
+
+                <div class="diagram-container">
+                    <!-- Step 1: Code -->
+                    <div class="flow-step">
+                        <div class="flow-icon" style="background: #24292e;">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h4>VS Code</h4>
+                        <p>Phát triển & Commit</p>
+                    </div>
+
+                    <div class="arrow-right"><i class="fas fa-arrow-right"></i></div>
+
+                    <!-- Step 2: GitHub -->
+                    <div class="flow-step">
+                        <div class="flow-icon" style="background: #333;">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <h4>GitHub</h4>
+                        <p>Source Control</p>
+                        <span class="status-badge status-completed" style="font-size: 0.7rem;">Push Trigger</span>
+                    </div>
+
+                    <div class="arrow-right"><i class="fas fa-arrow-right"></i></div>
+
+                    <!-- Step 3: Amplify -->
+                    <div class="flow-step">
+                        <div class="flow-icon" style="background: #ff9900;">
+                            <i class="fab fa-aws"></i>
+                        </div>
+                        <h4>AWS Amplify</h4>
+                        <p>Build & Deploy</p>
+                        <span class="status-badge status-completed" style="font-size: 0.7rem;">Auto CI/CD</span>
+                    </div>
+
+                    <div class="arrow-right"><i class="fas fa-arrow-right"></i></div>
+
+                    <!-- Step 4: Live -->
+                    <div class="flow-step">
+                        <div class="flow-icon" style="background: #10b981;">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h4>Live Website</h4>
+                        <p>Global CDN</p>
+                    </div>
+                </div>
+
+                <div
+                    style="margin-top: 3rem; text-align: left; background: rgba(255,255,255,0.5); padding: 2rem; border-radius: 16px;">
+                    <h4 style="color: var(--primary-color); margin-bottom: 1rem;"><i class="fas fa-check-circle"></i> Ưu
+                        điểm của kiến trúc mới:</h4>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-sync-alt feature-icon"></i> <strong>Tự động hóa 100%:</strong> Chỉ cần Push
+                            code lên GitHub, Amplify tự động Build và Deploy.</li>
+                        <li><i class="fas fa-history feature-icon"></i> <strong>Quản lý phiên bản:</strong> Dễ dàng
+                            rollback về phiên bản cũ nếu có lỗi.</li>
+                        <li><i class="fas fa-shield-alt feature-icon"></i> <strong>Bảo mật hơn:</strong> Không cần quản
+                            lý Access Key thủ công như S3 Upload.</li>
+                        <li><i class="fas fa-tachometer-alt feature-icon"></i> <strong>Hiệu năng cao:</strong> Tích hợp
+                            sẵn CDN toàn cầu (CloudFront).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
         <!-- Slide 6: Progress Summary (27/11/2025) -->
         <section class="slide-section" id="slide-6">
             <div class="slide-content">
                 <div class="slide-header">
-                    <h2 class="slide-title">5. Tổng Kết Tiến Độ</h2>
+                    <h2 class="slide-title">6. Tổng Kết Tiến Độ</h2>
                     <p class="slide-subtitle">Báo cáo ngày 27/11/2025</p>
                 </div>
 
@@ -1098,6 +1170,7 @@
         <div class="nav-dot" onclick="document.getElementById('slide-4').scrollIntoView()"></div>
         <div class="nav-dot" onclick="document.getElementById('slide-4-2').scrollIntoView()"></div>
         <div class="nav-dot" onclick="document.getElementById('slide-5').scrollIntoView()"></div>
+        <div class="nav-dot" onclick="document.getElementById('slide-deployment').scrollIntoView()"></div>
         <div class="nav-dot" onclick="document.getElementById('slide-6').scrollIntoView()"></div>
     </div>
 
@@ -1109,7 +1182,7 @@
 
     <script>
         // --- Navigation Logic ---
-        const slides = ['slide-1', 'slide-2', 'slide-3', 'slide-4', 'slide-4-2', 'slide-5', 'slide-6'];
+        const slides = ['slide-1', 'slide-2', 'slide-3', 'slide-4', 'slide-4-2', 'slide-5', 'slide-deployment', 'slide-6'];
         let currentSlideIndex = 0;
 
         function updateActiveDot() {

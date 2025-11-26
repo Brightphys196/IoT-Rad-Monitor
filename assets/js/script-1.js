@@ -1,4 +1,4 @@
-// =================================================================
+c// =================================================================
 //                      KHỐI CẤU HÌNH & BIẾN TOÀN CỤC
 // =================================================================
 let stationData = { "station_01": [], "station_02": [] };      // Dữ liệu mới nhất cho các thẻ live status
@@ -44,7 +44,7 @@ const CONFIG = {
         station_02: { light: '#ff9500', dark: '#ff9f0a' },
         radiation: { light: '#4bc0c0', dark: '#7ce0e0' }
     },
-    GEMINI_API_KEY: "AIzaSyBdnDroZPmU5PZ3qdexL22hn1Z0aGAUnYk",
+    GEMINI_API_KEY: "YOUR_GEMINI_API_KEY_HERE", // TODO: Replace with your actual API key or use a secure backend proxy
     GEMINI_MODEL: "gemini-2.5-flash-preview-05-20"
 };
 
@@ -101,7 +101,7 @@ async function fetchData() {
                 }
             }
         });
-        
+
         updateUI();
     } catch (error) {
         console.error("Không thể lấy dữ liệu trực tiếp:", error);
@@ -139,7 +139,7 @@ async function fetchHistoricalData(view) {
 
         fullDataset = [...historicalData.station_01, ...historicalData.station_02].sort((a, b) => a.timestamp - b.timestamp);
         saveDatasetToSession();
-        
+
         updateCharts();
         renderDependentComponents();
     } catch (error) {
@@ -159,14 +159,14 @@ function getFilteredData(dataset, view, maxPoints = 500) {
     if (!dataset || dataset.length === 0) return [];
     const now = Date.now();
     let startTime;
-    
+
     switch (view) {
         case '1d': startTime = now - 1 * 24 * 60 * 60 * 1000; break;
         case '5d': startTime = now - 5 * 24 * 60 * 60 * 1000; break;
         case '1m': startTime = now - 30 * 24 * 60 * 60 * 1000; break;
         case '6m': startTime = now - 180 * 24 * 60 * 60 * 1000; break;
         case '1y': startTime = now - 365 * 24 * 60 * 60 * 1000; break;
-        default:   startTime = now - 1 * 24 * 60 * 60 * 1000;
+        default: startTime = now - 1 * 24 * 60 * 60 * 1000;
     }
 
     const filtered = dataset.filter(d => d.timestamp >= startTime);
@@ -211,7 +211,7 @@ function updateUI() {
         document.getElementById(`temp-value-${suffix}`).innerText = `${temp.toFixed(1)} °C`;
         document.getElementById(`humi-value-${suffix}`).innerText = `${humi.toFixed(1)} %`;
         document.getElementById(`usv-value-${suffix}`).innerText = `${uSv.toFixed(2)} µSv/h`;
-        
+
         const tempStatus = getTemperatureStatus(temp);
         const tempStatusEl = document.getElementById(`temp-status-${suffix}`);
         tempStatusEl.innerText = tempStatus.text;
@@ -226,7 +226,7 @@ function updateUI() {
         const usvStatusEl = document.getElementById(`usv-status-${suffix}`);
         usvStatusEl.innerText = radStatus.text;
         usvStatusEl.className = `status ${radStatus.class}`;
-        
+
         if (lastUpdatedEl) lastUpdatedEl.innerText = `Cập nhật: ${new Date(timestamp).toLocaleTimeString('vi-VN')}`;
     });
 }
@@ -344,13 +344,13 @@ function setupIndividualChartControls() {
                 filterButtons.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 def.currentView = btn.dataset.view;
-                updateCharts(); 
+                updateCharts();
             });
         });
 
         const btnAiHistory = document.getElementById(`btn-ai-history-${def.id}`);
         if (btnAiHistory) btnAiHistory.addEventListener('click', () => handleAiHistoryClick(def));
-        
+
         const btnResetZoom = document.getElementById(`btn-reset-zoom-${def.id}`);
         if (btnResetZoom) btnResetZoom.addEventListener('click', () => {
             const chart = allCharts.find(c => c.definition.id === def.id);
@@ -421,7 +421,7 @@ function updateCharts() {
 
     allCharts.forEach(chart => {
         const def = chart.definition;
-        
+
         // Cập nhật dữ liệu cho từng trạm
         chart.data.datasets.forEach((dataset, index) => {
             const stationId = stationIds[index];
@@ -430,27 +430,27 @@ function updateCharts() {
             const filteredData = getFilteredData(dataForStation, currentView);
             dataset.data = filteredData.map(d => ({ x: d.timestamp, y: d[def.dataKey] })); // Đảm bảo đúng định dạng {x, y}
         });
-        
-        const timeUnit = { 
-            '1d': 'hour', 
-            '5d': 'day', 
-            '1m': 'day', 
-            '6m': 'month', 
-            '1y': 'month' 
+
+        const timeUnit = {
+            '1d': 'hour',
+            '5d': 'day',
+            '1m': 'day',
+            '6m': 'month',
+            '1y': 'month'
         }[currentView];
 
         chart.options.scales.x.time.unit = timeUnit;
         chart.options.scales.x.time.tooltipFormat = timeUnit === 'hour' ? 'HH:mm' : 'dd/MM/yy';
-        chart.update('none'); 
+        chart.update('none');
     });
 }
 
-function createMockData() { 
+function createMockData() {
     const data = []; const now = new Date();
     for (let i = 20; i >= 0; i--) {
         const time = new Date(now.getTime() - i * 15 * 60 * 1000);
-        data.push({ 
-            timestamp: time.getTime(), 
+        data.push({
+            timestamp: time.getTime(),
             temperature: (22 + Math.random() * 4).toFixed(1),
             humidity: (65 + Math.random() * 10).toFixed(1),
             uSv: (0.1 + Math.random() * 0.2).toFixed(2)
@@ -463,10 +463,10 @@ function createMockData() {
 function renderDependentComponents() {
     // [SỬA LỖI] Guard Clause: Chỉ chạy nếu ở trang evaluation
     if (!document.getElementById('daily-radiation-chart')) return;
-    
+
     const dailyAverages = processDailyAverages(fullDataset);
     renderDailyRadiationChart(dailyAverages);
-    
+
     const activeMonthlyMetric = document.querySelector('#monthly-metric-filter button.active')?.dataset.metric || 'temperature';
     renderMonthlyComparisonChart(activeMonthlyMetric);
 }
@@ -524,8 +524,8 @@ function renderDailyRadiationChart(dailyData) {
                 barPercentage: 0.8
             }]
         },
-        options: { 
-            responsive: true, 
+        options: {
+            responsive: true,
             maintainAspectRatio: false,
             plugins: {
                 legend: { display: false },
@@ -540,7 +540,7 @@ function renderDailyRadiationChart(dailyData) {
                     bodyFont: { size: 13 },
                     callbacks: {
                         // Hiển thị ngày tháng đầy đủ trong tiêu đề tooltip
-                        title: function(tooltipItems) {
+                        title: function (tooltipItems) {
                             const dataIndex = tooltipItems[0].dataIndex;
                             const fullDate = new Date(dailyData[dataIndex].date);
                             // Bù lại múi giờ để đảm bảo ngày hiển thị chính xác
@@ -548,7 +548,7 @@ function renderDailyRadiationChart(dailyData) {
                             return `${getTranslation('chart_date', 'Ngày')}: ${fullDate.toLocaleDateString(getLanguage() === 'vi' ? 'vi-VN' : 'en-US')}`;
                         },
                         // Tùy chỉnh nội dung của tooltip
-                        label: function(context) {
+                        label: function (context) {
                             const avgRad = context.raw;
                             return `${getTranslation('chart_average', 'Trung bình')}: ${avgRad.toFixed(3)} µSv/h`;
                         }
@@ -557,7 +557,7 @@ function renderDailyRadiationChart(dailyData) {
             },
             scales: {
                 x: { ticks: { color: theme === 'dark' ? '#adb5bd' : '#6c757d' } },
-                y: { 
+                y: {
                     beginAtZero: true,
                     grid: { color: theme === 'dark' ? '#30363d' : '#e9ecef' },
                     ticks: { color: theme === 'dark' ? '#adb5bd' : '#6c757d' }
@@ -648,16 +648,16 @@ function renderMonthlyComparisonChart(metric = 'temperature') {
                     titleFont: { size: 14, weight: 'bold' },
                     bodyFont: { size: 13 },
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             const value = context.raw;
                             return `${getTranslation('chart_average', 'Trung bình')}: ${value.toFixed(2)}`;
                         }
                     }
                 }
             },
-            scales: { 
+            scales: {
                 x: { ticks: { color: theme === 'dark' ? '#adb5bd' : '#6c757d' } },
-                y: { 
+                y: {
                     beginAtZero: true,
                     grid: { color: theme === 'dark' ? '#30363d' : '#e9ecef' },
                     ticks: { color: theme === 'dark' ? '#adb5bd' : '#6c757d' }
@@ -699,7 +699,7 @@ function loadDatasetFromSession() {
 function exportToCsv(filename, rows) {
     // BOM (Byte Order Mark) để Excel nhận dạng đúng ký tự UTF-8
     const BOM = '\uFEFF';
-    
+
     const processRow = row => row.map(val => {
         let finalVal = val === null ? '' : val.toString();
         // Escape dấu ngoặc kép bằng cách nhân đôi chúng
@@ -714,9 +714,9 @@ function exportToCsv(filename, rows) {
     }).join(',');
 
     const csvContent = rows.map(processRow).join('\n');
-    
+
     const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
-    
+
     const link = document.createElement("a");
     if (link.download !== undefined) { // Kiểm tra tính năng
         const url = URL.createObjectURL(blob);
@@ -747,7 +747,7 @@ async function handleDeleteAnalysis(analysisId) {
         }
 
         alert('Đã xóa phân tích thành công!');
-        
+
         // Xóa mục khỏi giao diện
         const itemToRemove = document.querySelector(`li[data-id='${analysisId}']`);
         if (itemToRemove) {
@@ -757,7 +757,7 @@ async function handleDeleteAnalysis(analysisId) {
         // Kiểm tra xem danh sách có còn trống không
         const listElement = document.getElementById('saved-analyses-list');
         if (listElement && !listElement.querySelector('li')) {
-             listElement.innerHTML = '<p class="placeholder">Chưa có phân tích nào được lưu.</p>';
+            listElement.innerHTML = '<p class="placeholder">Chưa có phân tích nào được lưu.</p>';
         }
 
     } catch (error) {
@@ -793,7 +793,7 @@ function handleEditClick(event) {
     actionsDiv.querySelector('.btn-save-edit').onclick = async () => {
         const newContent = contentDiv.innerHTML;
         const analysisId = listItem.dataset.id;
-        
+
         try {
             const response = await fetch(`${CONFIG.API_ENDPOINT_UPDATE_ANALYSIS}/${analysisId}`, {
                 method: 'PUT',
@@ -801,7 +801,7 @@ function handleEditClick(event) {
                 body: JSON.stringify({ analysisText: newContent })
             });
             if (!response.ok) throw new Error('Cập nhật thất bại');
-            
+
             alert('Đã cập nhật phân tích thành công!');
             contentDiv.contentEditable = false;
             contentDiv.classList.remove('editing');
@@ -881,7 +881,7 @@ async function callGeminiAPI(prompt) {
         return "<p class='error'>Lỗi: Vui lòng cung cấp API Key của Gemini trong tệp script.js.</p>";
     }
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${CONFIG.GEMINI_MODEL}:generateContent?key=${CONFIG.GEMINI_API_KEY}`;
-    
+
     const payload = { contents: [{ parts: [{ text: prompt }] }] };
 
     try {
@@ -920,9 +920,9 @@ async function handleAiSummaryClick() {
         summaryContent.innerHTML = '<p class="placeholder">Chưa có dữ liệu để phân tích.</p>';
         return;
     }
-    
+
     showLoading(summaryContent);
-    
+
     const latestData = fullDataset[fullDataset.length - 1];
     const prompt = `
         Bạn là một chuyên gia phân tích dữ liệu môi trường, đưa ra nhận xét và khuyến nghị bằng tiếng Việt.
@@ -968,7 +968,7 @@ async function handleAiHistoryClick(chartDef) {
     showLoading(modalBody);
 
     const dataPoints = filteredData.map(d => d[chartDef.dataKey]);
-    
+
     const stats = {
         min: Math.min(...dataPoints).toFixed(1),
         max: Math.max(...dataPoints).toFixed(1),
@@ -1187,11 +1187,11 @@ async function handleFetchHistory() {
 
     const startOfDay = new Date(selectedDate);
     startOfDay.setHours(0, 0, 0, 0);
-    
+
     const endOfDay = new Date(selectedDate);
     endOfDay.setHours(23, 59, 59, 999);
 
-    const dataForDay = fullDataset.filter(d => 
+    const dataForDay = fullDataset.filter(d =>
         d.timestamp >= startOfDay.getTime() && d.timestamp <= endOfDay.getTime()
     );
 
@@ -1299,7 +1299,7 @@ async function fetchAndRenderHeatmap(metric = 'temperature') {
         console.log("Dữ liệu hợp lệ, chuẩn bị vẽ heatmap:", data.slice(0, 5)); // Log 5 mục đầu tiên
 
         // Xóa trạng thái đang tải trước khi vẽ
-        heatmapContainer.innerHTML = ''; 
+        heatmapContainer.innerHTML = '';
         initHeatmap(data, metric);
 
     } catch (error) {
@@ -1364,19 +1364,19 @@ async function fetchDeviceStatus() {
         const statusData = await response.json();
 
         // ✨ [SỬA LỖI] Kiểm tra trạng thái 'online' thay vì 'connected' để khớp với phản hồi từ API.
-        const isConnected = statusData.status === 'online'; 
+        const isConnected = statusData.status === 'online';
         const statusClass = isConnected ? 'connected' : 'disconnected';
-        
+
         const lang = getLanguage();
         // ✨ [SỬA LỖI] Xóa định nghĩa getTranslation cục bộ, sử dụng hàm toàn cục
-        const statusText = isConnected 
-            ? getTranslation('status_connected', 'Đã kết nối') 
+        const statusText = isConnected
+            ? getTranslation('status_connected', 'Đã kết nối')
             : getTranslation('status_disconnected', 'Mất kết nối');
 
-        const icon = isConnected 
+        const icon = isConnected
             ? `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`
             : `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>`;
-        
+
         // ✨ [CẢI TIẾN] Hiển thị thông tin chi tiết từ API nếu có.
         let detailsHtml = '';
         if (statusData.details) {
@@ -1536,25 +1536,25 @@ document.addEventListener('DOMContentLoaded', () => {
         updateUI();
         renderDependentComponents();
     }
-    
+
     // Khởi tạo các thành phần giao diện
     initializeChartDefinitions();
     setupCharts();
-    
+
     // Gắn các sự kiện
     setupGlobalEventListeners();
     setupGlobalChartFilters();
     setupIndividualChartControls();
     setupHeatmapControls();
     setupCollapsibleSections();
-    
+
     // Tải dữ liệu phân tích đã lưu
     loadSavedAnalyses();
-    
+
     // Tải dữ liệu ban đầu
     fetchData(); // Lấy dữ liệu live mới nhất
     fetchHistoricalData(currentView); // Tải dữ liệu lịch sử ban đầu cho chế độ xem mặc định
-    
+
     // Bắt đầu chu trình cập nhật live
     if (document.querySelector('.dashboard-grid')) {
         dataFetchInterval = setInterval(fetchData, CONFIG.UPDATE_INTERVAL);
@@ -1562,7 +1562,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function updateDashboardTheme() {
-    setupCharts(); 
+    setupCharts();
     updateUI();
 }
 window.updateDashboardTheme = updateDashboardTheme;
