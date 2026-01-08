@@ -21,7 +21,8 @@
 #define DHT11Pin 5
 #define DHTType DHT11
 #define PIN_TICK 27
-#define CONVERSION_FACTOR 367.5
+
+#define CONVERSION_FACTOR 151.0
 #define AWS_IOT_PUBLISH_TOPIC "/tram/pub"
 #define AWS_IOT_SUBSCRIBE_TOPIC "/tram/sub"
 
@@ -38,12 +39,14 @@ TFT_eSprite spr = TFT_eSprite(&tft);
 WiFiUDP ntpUDP;
 WiFiClientSecure net;
 NTPClient timeClient(ntpUDP, "vn.pool.ntp.org");
+PubSubClient client(net);
 static float humi = 0;
 static float tempC = 0;
 static long timeTick = 0;
-const char *statusStation = "Tram";
+const char *statusStation = "Tram4";
 int addr = 0;
 int lastSignalState = HIGH;
+portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 static volatile unsigned long counts = 0;
 static float uSv;
 static float cps = 0;
@@ -59,11 +62,12 @@ uint64_t messageTimestamp;
 unsigned long lastMillis = 0;
 unsigned long lastPublishMillis = 0;
 const int publishInterval = 7000;
+const int measureInterval = 1000;
 unsigned long previousMillis = 0;
 int timeDelay = 7000;
 StaticJsonDocument<500> StationDoc;
 StaticJsonDocument<500> TempDoc;
-PubSubClient client(net);
+
 time_t now;
 time_t nowish = 1510592825;
 unsigned long epochTime;
@@ -79,7 +83,6 @@ void display();
 void tube_impulse();
 void publishMessage();
 void tempEvent();
-void readData();
 
 void countPulses() {
   int currentSignalState = digitalRead(PIN_TICK);
@@ -91,7 +94,9 @@ void countPulses() {
 
 //sensors
 void IRAM_ATTR tube_impulse(void) {
+    portENTER_CRITICAL_ISR(&timerMux);
     counts++;
+    portEXIT_CRITICAL_ISR(&timerMux);
 }
 
 
@@ -211,64 +216,39 @@ void Init() {
     spr.setTextDatum(MC_DATUM);
     spr.drawString("Khoi Dong...", tft.width() / 2, tft.height() / 2);
     spr.pushSprite(0, 0);
-    delay(1500);
 
     HT.begin();
     pinMode(PIN_TICK, INPUT);
+    // Gắn ngắt an toàn
     attachInterrupt(digitalPinToInterrupt(PIN_TICK), tube_impulse, FALLING);
+    
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    
-    // --- Đo phông nền ---
-    spr.fillSprite(TFT_BLACK);
-    spr.setTextDatum(MC_DATUM);
-    spr.setTextSize(3); // ✅ THAY ĐỔI: Tăng cỡ chữ
-    spr.drawString("DANG DO PHONG NEN", tft.width() / 2, tft.height() / 2 - 15);
-    spr.setTextSize(2);
-    spr.drawString("Vui long de yen trong 15 giay...", tft.width() / 2, tft.height() / 2 + 15);
-    spr.pushSprite(0, 0);
-    
-    unsigned long start_time = millis();
-    unsigned long start_counts = counts;
-    while(millis() - start_time < 15000) {
-      delay(100);
+    // Chờ kết nối WiFi một chút
+    Serial.print("Connecting WiFi");
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
     }
-    backgroundCPS = (float)(counts - start_counts) / 15.0;
-    Serial.print("Phong nen da do: "); Serial.print(backgroundCPS); Serial.println(" CPS");
-
-    // ✅ THÊM: Hiển thị kết quả đo phông
-    spr.fillSprite(TFT_BLACK);
-    spr.setTextDatum(MC_DATUM);
-    spr.setTextSize(2);
-    spr.drawString("Phong nen da do:", tft.width() / 2, tft.height() / 2 - 15);
-    spr.setTextSize(4);
-    spr.drawFloat(backgroundCPS, 2, tft.width() / 2, tft.height() / 2 + 10);
-    spr.pushSprite(0, 0);
-    delay(3000); // Hiển thị trong 3 giây
+    Serial.println("\nWiFi Connected");
     
-    count_prev = counts; 
     lastMillis = millis();
 }
+
 void eeprom()
 {
-    if (char(EEPROM.read(addr)) == 't')
-    {
+    if (char(EEPROM.read(addr)) == 't') {
         EEPROM.write(addr, 'f');
         EEPROM.commit();
-    }
-    else
-    {
-        if (WiFi.waitForConnectResult() != WL_CONNECTED)
-        {
+    } else {
+        if (WiFi.status() != WL_CONNECTED) {
             EEPROM.write(addr, 't');
             EEPROM.commit();
             ESP.restart();
         }
-        Serial.println("");
-        Serial.println("WiFi connected");
-        Serial.println("IP address: ");
-        Serial.println(WiFi.localIP());
+        Serial.println("WiFi connected (EEPROM check)");
     }
 }
+
 void arduinoOTA()
 {
     ArduinoOTA.setHostname(statusStation);
@@ -350,38 +330,32 @@ void tempEvent()
     char msg[256];
     serializeJson(TempDoc, msg);
 }
+
 void display() {
-    // --- Trạng thái NGUY HIỂM (Danger) ---
     if (uSv >= DANGER_THRESHOLD) {
         spr.fillSprite(TFT_RED);
         spr.setTextColor(TFT_WHITE);
         spr.setTextDatum(MC_DATUM);
-        
         if ((millis() / 500) % 2 == 0) {
             spr.setTextSize(3);
-            spr.drawString("DANGER", tft.width() / 2, tft.height() / 2 - 20); // ✅ ĐÃ THAY ĐỔI
+            spr.drawString("DANGER", tft.width() / 2, tft.height() / 2 - 20);
         }
-        
         spr.setTextSize(2);
         spr.drawFloat(uSv, 3, tft.width() / 2, tft.height() / 2 + 30);
-
-    // --- Trạng thái CẢNH BÁO (Warning) ---
     } else if (uSv >= WARNING_THRESHOLD) {
         spr.fillSprite(TFT_ORANGE);
         spr.setTextColor(TFT_BLACK);
         spr.setTextDatum(MC_DATUM);
         spr.setTextSize(3);
-        spr.drawString("WARNING", tft.width() / 2, tft.height() / 2 - 20); // ✅ ĐÃ THAY ĐỔI
+        spr.drawString("WARNING", tft.width() / 2, tft.height() / 2 - 20);
         spr.setTextSize(2);
         spr.drawFloat(uSv, 3, tft.width() / 2, tft.height() / 2 + 30);
-
-    // --- Trạng thái BÌNH THƯỜNG (Normal) ---
     } else {
         spr.fillSprite(TFT_BLACK);
         spr.setTextDatum(TL_DATUM);
-
         spr.setTextSize(2);
         spr.setTextColor(TFT_WHITE);
+        
         char buffer[32];
         sprintf(buffer, "T: %.1f C", tempC);
         spr.drawString(buffer, 15, 10);
@@ -406,41 +380,64 @@ void display() {
         
         spr.drawFastHLine(0, 155, tft.width(), TFT_DARKGREY);
 
+        portENTER_CRITICAL(&timerMux);
+        unsigned long dispCounts = counts;
+        portEXIT_CRITICAL(&timerMux);
+        
         spr.setTextSize(1);
         spr.setTextColor(TFT_CYAN);
-        spr.drawString("Tong dem: " + String(counts), 15, 160);
+        spr.drawString("Tong dem: " + String(dispCounts), 15, 160);
         
         time_t now_disp = time(nullptr);
         struct tm* ptm = localtime(&now_disp);
         strftime(buffer, sizeof(buffer), "%H:%M:%S", ptm);
         spr.drawString(buffer, 260, 160);
     }
-
     spr.pushSprite(0, 0);
 }
 
 
 void readData() {
-    if (millis() - lastMillis >= 1000) {
-        float elapsedSeconds = (float)(millis() - lastMillis) / 1000.0;
-        float currentCPS = (float)(counts - count_prev) / elapsedSeconds;
+    unsigned long currentMillis = millis();
+
+    // Tính toán mỗi 1 giây
+    if (currentMillis - lastMillis >= measureInterval) {
+        float elapsedSeconds = (currentMillis - lastMillis) / 1000.0;
         
-        cps = currentCPS - backgroundCPS;
-        if (cps < 0) cps = 0;
+        portENTER_CRITICAL(&timerMux);
+        unsigned long currentCounts = counts;
+        portEXIT_CRITICAL(&timerMux);
+        
+        float deltaCounts = (float)(currentCounts - count_prev);
+        cps = deltaCounts / elapsedSeconds;
         uSv = (cps * 60.0) / CONVERSION_FACTOR;
-        humi = HT.readHumidity();
-        tempC = HT.readTemperature();
         
-        count_prev = counts;
-        lastMillis = millis();
+        float newHumi = HT.readHumidity();
+        float newTemp = HT.readTemperature();
+        if (!isnan(newHumi)) humi = newHumi;
+        if (!isnan(newTemp)) tempC = newTemp;
+
+        // Logic điều khiển lưu trữ (Trạm 1)
+        timeClient.update();
+        unsigned long epoch = timeClient.getEpochTime();
+        if (wr == 0) wr_contl = 0;
+        else if (wr == 1) wr_contl = (epoch % 60 == 0) ? 0 : 1;
+        else if (wr == 5) wr_contl = (epoch % 300 == 0) ? 0 : 1;
+
+        tempEvent();
+        display();
+
+        count_prev = currentCounts;
+        lastMillis = currentMillis;
     }
     
-    if (millis() - lastPublishMillis > publishInterval) {
+    // Gửi AWS (Mỗi 7 giây)
+    if (currentMillis - lastPublishMillis > publishInterval) {
         if (!client.connected()) {
             connectAWS();
         }
         client.loop();
         publishMessage();
-        lastPublishMillis = millis();
+        lastPublishMillis = currentMillis;
     }
 }

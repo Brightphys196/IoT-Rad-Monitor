@@ -1,51 +1,56 @@
 #pragma once
 
-// THƯ VIỆN
-#include <ESP8266WiFi.h>
-#include <ESP8266WiFiMulti.h>
+// --- 1. THƯ VIỆN ---
+#include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
-#include <DNSServer.h>
-#include <ESP8266WebServer.h>
-#include <SPI.h>
 #include <ArduinoJson.h>
 #include "DHT.h"
-#include <stdint.h>
 #include <time.h>
-#include <WiFiUdp.h>
 #include <NTPClient.h>
-#include <ESP8266mDNS.h>
 #include <ArduinoOTA.h>
-#include <SD.h>
 #include <EEPROM.h>
-#include <Wire.h>
-#include <hd44780.h>
-#include <hd44780ioClass/hd44780_I2Cexp.h>
-#include <LiquidCrystal_I2C.h>
+#include <SPI.h>
+#include <TFT_eSPI.h>
 #include "secrets.h"
 #include <math.h>
 
-// ĐỊNH NGHĨA
-#define DHT11Pin D3
+// =================================================================
+//                      2. CẤU HÌNH HỆ THỐNG
+// =================================================================
+#define DHT11Pin 5
 #define DHTType DHT11
-#define PIN_TICK D5
+#define PIN_TICK 27
+
+#define CONVERSION_FACTOR 151.0
 #define AWS_IOT_PUBLISH_TOPIC "/tram/pub"
 #define AWS_IOT_SUBSCRIBE_TOPIC "/tram/sub"
 
-// KHAI BÁO ĐỐI TƯỢNG VÀ BIẾN TOÀN CỤC
+// Ngưỡng cảnh báo
+#define WARNING_THRESHOLD 1.0
+#define DANGER_THRESHOLD  5.0
+
+// =================================================================
+//              3. KHỞI TẠO ĐỐI TƯỢNG VÀ BIẾN TOÀN CỤC
+// =================================================================
 DHT HT(DHT11Pin, DHTType);
-LiquidCrystal_I2C lcd(0x27, 16, 2);
+TFT_eSPI tft = TFT_eSPI(); 
+TFT_eSprite spr = TFT_eSprite(&tft);
 WiFiUDP ntpUDP;
 WiFiClientSecure net;
 NTPClient timeClient(ntpUDP, "vn.pool.ntp.org");
+PubSubClient client(net);
 static float humi = 0;
 static float tempC = 0;
 static long timeTick = 0;
 const char *statusStation = "Tram";
 int addr = 0;
+int lastSignalState = HIGH;
+portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 static volatile unsigned long counts = 0;
 static float uSv;
 static float cps = 0;
+static float backgroundCPS = 0.0;
 static unsigned long int timeCount_present;
 static unsigned long int count_present;
 static unsigned long int timeCount_prev = 0;
@@ -55,19 +60,20 @@ static float wr_contl = 0;
 static float wr = 0;
 uint64_t messageTimestamp;
 unsigned long lastMillis = 0;
+unsigned long lastPublishMillis = 0;
+const int publishInterval = 7000;
+const int measureInterval = 1000;
 unsigned long previousMillis = 0;
 int timeDelay = 7000;
 StaticJsonDocument<500> StationDoc;
 StaticJsonDocument<500> TempDoc;
-BearSSL::X509List cert(AWS_CERT_CA);
-BearSSL::X509List client_crt(AWS_CERT_CRT);
-BearSSL::PrivateKey key(AWS_CERT_PRIVATE);
-PubSubClient client(net);
+
 time_t now;
 time_t nowish = 1510592825;
 unsigned long epochTime;
 
-// KHAI BÁO HÀM
+
+// KHAI BÁO CÁC HÀM
 void Init();
 void eeprom();
 void arduinoOTA();
@@ -77,8 +83,21 @@ void display();
 void tube_impulse();
 void publishMessage();
 void tempEvent();
-void readData();
 
+void countPulses() {
+  int currentSignalState = digitalRead(PIN_TICK);
+  if (lastSignalState == HIGH && currentSignalState == LOW) {
+    counts++;
+  }
+  lastSignalState = currentSignalState;
+}
+
+//sensors
+void IRAM_ATTR tube_impulse(void) {
+    portENTER_CRITICAL_ISR(&timerMux);
+    counts++;
+    portEXIT_CRITICAL_ISR(&timerMux);
+}
 
 
 //aws-mqtt
@@ -120,35 +139,35 @@ void messageReceived(char *topic, byte *payload, unsigned int length)
     }
     Serial.println();
 }
-void connectAWS()
-{
+void connectAWS() {
     delay(3000);
     WiFi.mode(WIFI_STA);
     NTPConnect();
-    net.setTrustAnchors(&cert);
-    net.setClientRSACert(&client_crt, &key);
+
+    // Sử dụng các hàm cài đặt chứng chỉ của ESP32
+    net.setCACert(AWS_CERT_CA);
+    net.setCertificate(AWS_CERT_CRT);
+    net.setPrivateKey(AWS_CERT_PRIVATE);
+    
     client.setServer(AWS_IOT_ENDPOINT, 8883);
     client.setCallback(messageReceived);
     Serial.println("Connecting to AWS IOT");
-    while (!client.connect(THINGNAME))
-    {
-
-        if (millis() - lastMillis > timeDelay * 10)
-        {
+    while (!client.connect(THINGNAME)) {
+        if (millis() - lastMillis > timeDelay * 10) {
             lastMillis = millis();
             Serial.print(".connectAWS.");
             delay(1000);
             ESP.restart();
         }
     }
-    if (!client.connected())
-    {
+    if (!client.connected()) {
         Serial.println("AWS IoT Timeout!");
         return;
     }
     client.subscribe(AWS_IOT_SUBSCRIBE_TOPIC);
     Serial.println("AWS IoT Connected!");
 }
+
 void publishMessage()
 {
     StaticJsonDocument<200> doc;
@@ -180,41 +199,56 @@ void publishMessage()
 
 
 //ota-wifi
-void Init()
-{
+void Init() {
     Serial.begin(115200);
     EEPROM.begin(512);
-    ArduinoOTA.begin();
-    timeClient.begin();
-    timeClient.setTimeOffset(7 * 3600);
+    
+    tft.init();
+    #ifdef TFT_BL
+      pinMode(TFT_BL, OUTPUT);
+      digitalWrite(TFT_BL, HIGH);
+    #endif
+    tft.setRotation(1);
+    spr.createSprite(tft.width(), tft.height());
+
+    spr.fillSprite(TFT_BLACK);
+    spr.setTextColor(TFT_GREEN, TFT_BLACK);
+    spr.setTextDatum(MC_DATUM);
+    spr.drawString("Khoi Dong...", tft.width() / 2, tft.height() / 2);
+    spr.pushSprite(0, 0);
+
     HT.begin();
-    lcd.init();
-    lcd.backlight();
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
     pinMode(PIN_TICK, INPUT);
+    // Gắn ngắt an toàn
     attachInterrupt(digitalPinToInterrupt(PIN_TICK), tube_impulse, FALLING);
+    
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    // Chờ kết nối WiFi một chút
+    Serial.print("Connecting WiFi");
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+    }
+    Serial.println("\nWiFi Connected");
+    
+    lastMillis = millis();
 }
+
 void eeprom()
 {
-    if (char(EEPROM.read(addr)) == 't')
-    {
+    if (char(EEPROM.read(addr)) == 't') {
         EEPROM.write(addr, 'f');
         EEPROM.commit();
-    }
-    else
-    {
-        if (WiFi.waitForConnectResult() != WL_CONNECTED)
-        {
+    } else {
+        if (WiFi.status() != WL_CONNECTED) {
             EEPROM.write(addr, 't');
             EEPROM.commit();
             ESP.restart();
         }
-        Serial.println("");
-        Serial.println("WiFi connected");
-        Serial.println("IP address: ");
-        Serial.println(WiFi.localIP());
+        Serial.println("WiFi connected (EEPROM check)");
     }
 }
+
 void arduinoOTA()
 {
     ArduinoOTA.setHostname(statusStation);
@@ -296,145 +330,114 @@ void tempEvent()
     char msg[256];
     serializeJson(TempDoc, msg);
 }
-void display()
-{
-    lcd.setCursor(0, 0);
-    lcd.print("T:");
-    lcd.setCursor(2, 0);
-    lcd.print(tempC);
-    lcd.setCursor(7, 0);
-    lcd.print("C");
-    lcd.setCursor(9, 0);
-    lcd.print("C:");
-    lcd.setCursor(11, 0);
-    lcd.print(cps);
-    lcd.setCursor(0, 1);
-    lcd.print("H:");
-    lcd.setCursor(2, 1);
-    lcd.print(humi);
-    lcd.setCursor(7, 1);
-    lcd.print("%");
-    lcd.setCursor(9, 1);
-    lcd.print("U:");
-    lcd.setCursor(11, 1);
-    lcd.print(uSv);
+
+void display() {
+    if (uSv >= DANGER_THRESHOLD) {
+        spr.fillSprite(TFT_RED);
+        spr.setTextColor(TFT_WHITE);
+        spr.setTextDatum(MC_DATUM);
+        if ((millis() / 500) % 2 == 0) {
+            spr.setTextSize(3);
+            spr.drawString("DANGER", tft.width() / 2, tft.height() / 2 - 20);
+        }
+        spr.setTextSize(2);
+        spr.drawFloat(uSv, 3, tft.width() / 2, tft.height() / 2 + 30);
+    } else if (uSv >= WARNING_THRESHOLD) {
+        spr.fillSprite(TFT_ORANGE);
+        spr.setTextColor(TFT_BLACK);
+        spr.setTextDatum(MC_DATUM);
+        spr.setTextSize(3);
+        spr.drawString("WARNING", tft.width() / 2, tft.height() / 2 - 20);
+        spr.setTextSize(2);
+        spr.drawFloat(uSv, 3, tft.width() / 2, tft.height() / 2 + 30);
+    } else {
+        spr.fillSprite(TFT_BLACK);
+        spr.setTextDatum(TL_DATUM);
+        spr.setTextSize(2);
+        spr.setTextColor(TFT_WHITE);
+        
+        char buffer[32];
+        sprintf(buffer, "T: %.1f C", tempC);
+        spr.drawString(buffer, 15, 10);
+        sprintf(buffer, "H: %.1f %%", humi);
+        spr.drawString(buffer, 180, 10);
+
+        spr.drawFastHLine(0, 40, tft.width(), TFT_DARKGREY);
+
+        spr.setTextColor(TFT_ORANGE);
+        spr.setTextDatum(TR_DATUM);
+        spr.drawFloat(uSv, 3, 305, 65, 4); 
+        spr.setTextDatum(TL_DATUM);
+        spr.setTextSize(2);
+        spr.drawString("uSv/h", 15, 60);
+
+        spr.setTextColor(TFT_YELLOW);
+        spr.setTextDatum(TR_DATUM);
+        spr.drawFloat(cps, 2, 305, 115, 4);
+        spr.setTextDatum(TL_DATUM);
+        spr.setTextSize(2);
+        spr.drawString("CPS", 15, 110);
+        
+        spr.drawFastHLine(0, 155, tft.width(), TFT_DARKGREY);
+
+        portENTER_CRITICAL(&timerMux);
+        unsigned long dispCounts = counts;
+        portEXIT_CRITICAL(&timerMux);
+        
+        spr.setTextSize(1);
+        spr.setTextColor(TFT_CYAN);
+        spr.drawString("Tong dem: " + String(dispCounts), 15, 160);
+        
+        time_t now_disp = time(nullptr);
+        struct tm* ptm = localtime(&now_disp);
+        strftime(buffer, sizeof(buffer), "%H:%M:%S", ptm);
+        spr.drawString(buffer, 260, 160);
+    }
+    spr.pushSprite(0, 0);
 }
 
-//sensors
-ICACHE_RAM_ATTR void tube_impulse(void)
-{
-    counts++;
-}
 
-void readData()
-{
-    timeClient.update();
-    unsigned long epochTime = timeClient.getEpochTime();
+void readData() {
+    unsigned long currentMillis = millis();
 
-    humi = HT.readHumidity();
-    tempC = HT.readTemperature();
-    if (isnan(humi) || isnan(tempC))
-    {
-        Serial.println(F("Failed to read from DHT sensor!"));
-        return;
+    // Tính toán mỗi 1 giây
+    if (currentMillis - lastMillis >= measureInterval) {
+        float elapsedSeconds = (currentMillis - lastMillis) / 1000.0;
+        
+        portENTER_CRITICAL(&timerMux);
+        unsigned long currentCounts = counts;
+        portEXIT_CRITICAL(&timerMux);
+        
+        float deltaCounts = (float)(currentCounts - count_prev);
+        cps = deltaCounts / elapsedSeconds;
+        uSv = (cps * 60.0) / CONVERSION_FACTOR;
+        
+        float newHumi = HT.readHumidity();
+        float newTemp = HT.readTemperature();
+        if (!isnan(newHumi)) humi = newHumi;
+        if (!isnan(newTemp)) tempC = newTemp;
+
+        // Logic điều khiển lưu trữ (Trạm 1)
+        timeClient.update();
+        unsigned long epoch = timeClient.getEpochTime();
+        if (wr == 0) wr_contl = 0;
+        else if (wr == 1) wr_contl = (epoch % 60 == 0) ? 0 : 1;
+        else if (wr == 5) wr_contl = (epoch % 300 == 0) ? 0 : 1;
+
+        tempEvent();
+        display();
+
+        count_prev = currentCounts;
+        lastMillis = currentMillis;
     }
-
-    now = time(nullptr);
-
-    if (!client.connected())
-    {
-        connectAWS();
-    }
-    else
-    {
+    
+    // Gửi AWS (Mỗi 7 giây)
+    if (currentMillis - lastPublishMillis > publishInterval) {
+        if (!client.connected()) {
+            connectAWS();
+        }
         client.loop();
-        if (millis() - lastMillis > timeDelay)
-        {
-            lastMillis = millis();
-            publishMessage();
-        }
+        publishMessage();
+        lastPublishMillis = currentMillis;
     }
-
-    if (WiFi.waitForConnectResult() == WL_CONNECTED)
-    {
-        timeCount_present = epochTime;
-        count_present = counts;
-        if (timeCount_present != timeCount_prev)
-        {
-            cps = (float)(count_present - count_prev) / (timeCount_present - timeCount_prev);
-            uSv = cps * 60 / 151.0;
-            count_prev = count_present;
-            timeCount_prev = timeCount_present;
-            Serial.print(timeCount_prev);
-            if (wr == 0)
-            {
-                wr_contl = 0;
-            }
-            else if (wr == 1)
-            {
-                if (timeCount_present % 60 == 0)
-                {
-                    wr_contl = 0;
-                    Serial.print("wr_contl = 0");
-                }
-                else
-                {
-                    wr_contl = 1;
-                    Serial.print("wr_contl = 1");
-                }
-            }
-            else if (wr == 5)
-            {
-                if (timeCount_present % 300 == 0)
-                {
-                    wr_contl = 0;
-                }
-                else
-                {
-                    wr_contl = 1;
-                }
-            }
-            tempEvent();
-        }
-    }
-    else
-    {
-        timeCount_present = 0;
-        count_present = counts;
-        if (millis() - timeTick > timeDelay)
-        {
-            cps = (float)(count_present - count_prev);
-            uSv = cps * 60 / 151.0;
-            count_prev = count_present;
-            timeTick = millis();
-        }
-    }
-}
-
-void arduinoOTA(){
-    // Thiết lập định danh Hostname để dễ nhận diện trên mạng
-    ArduinoOTA.setHostname(statusStation);
-
-    //Kích hoạt lớp bảo mật MD5
-    ArduinoOTA.setPasswordHash("123456789");
-
-    // Xử lý giao diện khi bắt đầu nạp
-    ArduinoOTA.onStart([]() {
-        String type = (ArduinoOTA.getCommand() == U_FLASH) ? "sketch" : "filesystem";
-        //Xoá màn hình để hiển thị thanh tiến trình
-        lcd.clear();
-        lcd.setCursor(0,0);
-        lcd.print("Updating " + type);
-    });
-
-    // Hiển thị phần trăm % trên trình nạp
-    ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-        int percent = (progress / (total / 100));
-        lcd.setCursor(0,1);
-        lcd.print("Progress: ");
-        lcd.print(percent);
-        lcd.print("%");
-    });
-    //Bắt đầu lắng nghe
-    ArduinoOTA.begin();
 }
