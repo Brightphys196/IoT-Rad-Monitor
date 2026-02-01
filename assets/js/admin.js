@@ -1,5 +1,7 @@
 // ✨ [CẬP NHẬT] Thêm endpoint cho API Admin
 const API_ADMIN_ENDPOINT = 'https://z2c6um5ew3.execute-api.ap-southeast-1.amazonaws.com/admin';
+// ✨ [MỚI] Endpoint điều khiển thiết bị
+const API_DEVICE_CONTROL = 'https://z2c6um5ew3.execute-api.ap-southeast-1.amazonaws.com/device-control';
 
 document.addEventListener('DOMContentLoaded', () => {
     const userTableBody = document.getElementById('user-table-body');
@@ -426,16 +428,80 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeControlModalBtn = document.getElementById('control-modal-close-btn');
     const stationListContainer = document.querySelector('.station-list'); // Container cho danh sách trạm
     let currentStationId = null;
+    let currentStationData = null; // ✨ [MỚI] Lưu trữ dữ liệu trạm hiện tại
+
+    /**
+     * ✨ [MỚI] Hàm gửi lệnh điều khiển xuống thiết bị thông qua API
+     * @param {string} stationId - ID của trạm (vd: station_01)
+     * @param {string} command - Lệnh điều khiển (RESET, INTERVAL, ALERT, SET_WIFI, UPDATE_FIRMWARE)
+     * @param {object} payload - Dữ liệu đi kèm lệnh
+     */
+    async function sendDeviceCommand(stationId, command, payload = {}) {
+        const accessToken = localStorage.getItem('accessToken');
+
+        // Hiển thị trạng thái đang gửi
+        showToast({ type: 'info', title: 'Đang gửi...', message: `Đang gửi lệnh ${command} đến ${stationId}` });
+
+        try {
+            const response = await fetch(API_DEVICE_CONTROL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({
+                    stationId: stationId,
+                    command: command,
+                    payload: payload
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || `Lỗi HTTP ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log(`[API] Command ${command} sent to ${stationId}:`, result);
+            return result;
+        } catch (error) {
+            console.error(`[API Error] Failed to send ${command}:`, error);
+            throw error;
+        }
+    }
 
     window.openControlModal = function (stationId) {
         currentStationId = stationId;
-        document.getElementById('modal-station-id').textContent = stationId;
-        if (stationControlModal) stationControlModal.style.display = 'flex';
+        // ✨ [SỬA LỖI] Lấy data từ cache thay vì nhận qua tham số
+        const stationInfo = window.stationDataCache?.[stationId] || null;
+        currentStationData = stationInfo;
+        document.getElementById('modal-station-id').textContent = stationId.replace('_', ' ').toUpperCase();
+
+        // Reset các input khi mở modal
+        const intervalInput = document.getElementById('interval-input');
+        if (intervalInput) intervalInput.value = stationInfo?.interval || 10;
+
+        const alertToggle = document.getElementById('alert-toggle');
+        if (alertToggle) alertToggle.checked = stationInfo?.alertEnabled || false;
+
+        if (stationControlModal) {
+            stationControlModal.style.display = 'flex';
+            stationControlModal.classList.add('modal-open');
+        }
     };
 
     function closeControlModal() {
-        if (stationControlModal) stationControlModal.style.display = 'none';
+        if (stationControlModal) {
+            stationControlModal.style.display = 'none';
+            stationControlModal.classList.remove('modal-open');
+        }
         currentStationId = null;
+        currentStationData = null;
+        // Reset tab to first
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        document.querySelector('.tab-btn[data-tab="basic"]')?.classList.add('active');
+        document.getElementById('tab-basic')?.classList.add('active');
     }
 
     if (closeControlModalBtn) {
@@ -448,23 +514,235 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ✨ [MỚI] Tab Switching Logic
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.dataset.tab;
+
+            // Remove active from all tabs and content
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            // Add active to clicked tab and corresponding content
+            btn.classList.add('active');
+            document.getElementById(`tab-${tabId}`)?.classList.add('active');
+        });
+    });
+
+    // ✨ [MỚI] Password Toggle
+    document.getElementById('toggle-password')?.addEventListener('click', () => {
+        const passInput = document.getElementById('wifi-pass');
+        const icon = document.querySelector('#toggle-password i');
+        if (passInput.type === 'password') {
+            passInput.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            passInput.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    });
+
+    // ✨ [MỚI] Alert Toggle Text Update
+    document.getElementById('alert-toggle')?.addEventListener('change', (e) => {
+        const statusText = document.getElementById('alert-status-text');
+        if (statusText) {
+            statusText.textContent = `Trạng thái: ${e.target.checked ? 'Bật' : 'Tắt'}`;
+        }
+    });
+
+    // ✨ [MỚI] File Drag & Drop for Firmware
+    const dropZone = document.getElementById('firmware-drop-zone');
+    const fileInput = document.getElementById('firmware-file');
+    const selectedFileName = document.getElementById('selected-file-name');
+
+    if (dropZone && fileInput) {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'));
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'));
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].name.endsWith('.bin')) {
+                fileInput.files = files;
+                if (selectedFileName) selectedFileName.textContent = files[0].name;
+            } else {
+                showToast({ type: 'error', title: 'Lỗi', message: 'Chỉ chấp nhận file .bin' });
+            }
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files[0] && selectedFileName) {
+                selectedFileName.textContent = fileInput.files[0].name;
+            }
+        });
+    }
+
+    // ✨ [CẬP NHẬT] WiFi Scanning với API thật
+    const API_WIFI_SCAN = 'https://z2c6um5ew3.execute-api.ap-southeast-1.amazonaws.com/wifi-scan';
+
+    async function requestWifiScan(stationId) {
+        const accessToken = localStorage.getItem('accessToken');
+        const response = await fetch(API_WIFI_SCAN, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({
+                action: 'REQUEST_SCAN',
+                stationId: stationId
+            })
+        });
+        if (!response.ok) throw new Error('Không thể gửi lệnh quét WiFi');
+        return response.json();
+    }
+
+    async function getWifiScanResults(stationId) {
+        const accessToken = localStorage.getItem('accessToken');
+        const response = await fetch(API_WIFI_SCAN, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({
+                action: 'GET_SCAN_RESULT',
+                stationId: stationId
+            })
+        });
+        if (!response.ok) throw new Error('Không thể lấy kết quả quét WiFi');
+        return response.json();
+    }
+
+    function renderWifiList(networks, wifiList, wifiListContainer) {
+        if (!networks || networks.length === 0) {
+            wifiList.innerHTML = `
+                <div style="padding: 20px; text-align: center; color: var(--text-color-muted);">
+                    <i class="fas fa-wifi" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i>
+                    <p>Không tìm thấy mạng WiFi nào</p>
+                </div>
+            `;
+            wifiListContainer.style.display = 'block';
+            return;
+        }
+
+        wifiList.innerHTML = networks.map(network => {
+            const rssi = network.rssi || -70;
+            const signalClass = rssi > -50 ? 'strong' : (rssi > -70 ? 'medium' : 'weak');
+            const ssid = network.ssid || 'Unknown';
+            return `
+                <div class="wifi-item" data-ssid="${ssid}">
+                    <div class="wifi-item-info">
+                        <i class="fas fa-wifi"></i>
+                        <span class="wifi-ssid">${ssid}</span>
+                    </div>
+                    <div class="wifi-signal ${signalClass}">
+                        <span></span><span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        wifiListContainer.style.display = 'block';
+
+        // Thêm sự kiện click cho mỗi WiFi item
+        wifiList.querySelectorAll('.wifi-item').forEach(item => {
+            item.addEventListener('click', () => {
+                wifiList.querySelectorAll('.wifi-item').forEach(i => i.classList.remove('selected'));
+                item.classList.add('selected');
+                document.getElementById('wifi-ssid').value = item.dataset.ssid;
+                document.getElementById('wifi-pass').focus();
+            });
+        });
+    }
+
+    document.getElementById('btn-scan-wifi')?.addEventListener('click', async () => {
+        if (!currentStationId) return;
+
+        const btn = document.getElementById('btn-scan-wifi');
+        const wifiListContainer = document.getElementById('wifi-list-container');
+        const wifiList = document.getElementById('wifi-list');
+
+        btn.classList.add('scanning');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin" id="scan-icon"></i> Đang quét...';
+        btn.disabled = true;
+
+        try {
+            // 1. Gửi lệnh quét WiFi xuống thiết bị
+            await requestWifiScan(currentStationId);
+            showToast({ type: 'info', title: 'Đang quét', message: 'Đã gửi lệnh quét. Đang chờ thiết bị phản hồi...' });
+
+            // 2. Polling để lấy kết quả (tối đa 10 lần, mỗi lần cách 2 giây)
+            let attempts = 0;
+            const maxAttempts = 10;
+            let networks = [];
+
+            while (attempts < maxAttempts) {
+                await new Promise(r => setTimeout(r, 2000)); // Chờ 2 giây
+                attempts++;
+
+                btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Đang chờ (${attempts}/${maxAttempts})...`;
+
+                const result = await getWifiScanResults(currentStationId);
+
+                if (result.networks && result.networks.length > 0) {
+                    networks = result.networks;
+                    break;
+                }
+
+                if (result.expired) {
+                    // Kết quả đã hết hạn, tiếp tục chờ
+                    continue;
+                }
+            }
+
+            if (networks.length > 0) {
+                renderWifiList(networks, wifiList, wifiListContainer);
+                showToast({ type: 'success', title: 'Hoàn tất', message: `Tìm thấy ${networks.length} mạng WiFi` });
+            } else {
+                renderWifiList([], wifiList, wifiListContainer);
+                showToast({ type: 'warning', title: 'Hết thời gian', message: 'Không nhận được kết quả từ thiết bị. Vui lòng thử lại.' });
+            }
+
+        } catch (error) {
+            showToast({ type: 'error', title: 'Lỗi', message: error.message });
+        } finally {
+            btn.classList.remove('scanning');
+            btn.innerHTML = '<i class="fas fa-sync-alt" id="scan-icon"></i> Quét WiFi';
+            btn.disabled = false;
+        }
+    });
+
     /**
-     * ✨ [MỚI] Render danh sách trạm dựa trên dữ liệu thật từ apiService
+     * ✨ [CẬP NHẬT] Render danh sách trạm với UI cải tiến
      */
     async function renderStationList() {
         if (!stationListContainer) return;
 
-        stationListContainer.innerHTML = '<div class="spinner"></div>'; // Loading state
+        stationListContainer.innerHTML = `
+            <div class="station-loading">
+                <div class="spinner"></div>
+                <span>Đang tải trạng thái các trạm...</span>
+            </div>
+        `;
 
         const stations = ["station_01", "station_02", "station_03", "station_04"];
-        const stationCards = [];
 
         // Fetch status cho từng trạm song song
         const statusPromises = stations.map(async (stationId) => {
             try {
-                // Sử dụng apiService từ script.js
                 const data = await apiService.getDeviceStatus(stationId);
-                // data trả về thường có dạng { status: "online", last_seen: ... } hoặc tương tự
                 return { id: stationId, data: data };
             } catch (error) {
                 console.error(`Lỗi lấy trạng thái ${stationId}:`, error);
@@ -474,36 +752,89 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const results = await Promise.all(statusPromises);
 
+        // ✨ [SỬA LỖI] Lưu dữ liệu trạm vào cache thay vì truyền qua onclick
+        window.stationDataCache = {};
+
         stationListContainer.innerHTML = results.map(item => {
             const stationId = item.id;
             const info = item.data;
+            const stationNum = stationId.split('_')[1];
+
+            // Lưu vào cache
+            window.stationDataCache[stationId] = info;
 
             let isOnline = false;
             let statusText = "Offline";
+            let lastSeen = "Không rõ";
 
-            // Logic kiểm tra status tương tự script.js
             if (info && info.status) {
                 isOnline = info.status.toLowerCase() === 'online';
                 statusText = isOnline ? 'Online' : 'Offline';
+                if (info.last_seen) {
+                    const lastSeenDate = new Date(info.last_seen);
+                    const now = new Date();
+                    const diffMs = now - lastSeenDate;
+                    const diffMins = Math.floor(diffMs / 60000);
+
+                    if (diffMins < 1) lastSeen = 'Vừa xong';
+                    else if (diffMins < 60) lastSeen = `${diffMins} phút trước`;
+                    else if (diffMins < 1440) lastSeen = `${Math.floor(diffMins / 60)} giờ trước`;
+                    else lastSeen = lastSeenDate.toLocaleDateString('vi-VN');
+                }
             }
 
-            const statusClass = isOnline ? 'status-enabled' : 'status-disabled';
+            const statusClass = isOnline ? 'online' : 'offline';
 
             return `
-                <div class="station-control-card">
-                    <div class="station-info">
-                        <h3>${stationId.replace('_', ' ').toUpperCase()}</h3>
-                        <span class="status-badge ${statusClass}">${statusText}</span>
+                <div class="station-control-card ${statusClass}">
+                    <div class="station-card-header">
+                        <div class="station-icon">
+                            <i class="fas fa-broadcast-tower"></i>
+                        </div>
+                        <div class="station-title-area">
+                            <h3>Trạm ${stationNum}</h3>
+                            <span class="station-id">${stationId}</span>
+                        </div>
+                        <div class="station-status-indicator ${statusClass}">
+                            <span class="status-dot"></span>
+                            <span class="status-text">${statusText}</span>
+                        </div>
                     </div>
-                    <div class="station-actions">
-                        <button class="control-btn" onclick="openControlModal('${stationId}')">
-                            <i class="fas fa-sliders-h"></i> Cấu hình
+                    <div class="station-card-body">
+                        <div class="station-metric">
+                            <i class="fas fa-clock"></i>
+                            <span>Lần cuối: ${lastSeen}</span>
+                        </div>
+                        ${info?.temperature ? `
+                        <div class="station-metric">
+                            <i class="fas fa-thermometer-half"></i>
+                            <span>${info.temperature}°C</span>
+                        </div>` : ''}
+                        ${info?.humidity ? `
+                        <div class="station-metric">
+                            <i class="fas fa-tint"></i>
+                            <span>${info.humidity}%</span>
+                        </div>` : ''}
+                    </div>
+                    <div class="station-card-footer">
+                        <button class="control-btn primary" onclick="openControlModal('${stationId}')">
+                            <i class="fas fa-cog"></i> Cấu hình
+                        </button>
+                        <button class="control-btn secondary" onclick="refreshStationStatus('${stationId}')">
+                            <i class="fas fa-sync-alt"></i>
                         </button>
                     </div>
                 </div>
             `;
         }).join('');
     }
+
+    // ✨ [MỚI] Hàm làm mới trạng thái một trạm
+    window.refreshStationStatus = async function (stationId) {
+        showToast({ type: 'info', title: 'Đang làm mới...', message: `Đang cập nhật trạng thái ${stationId}` });
+        await renderStationList();
+        showToast({ type: 'success', title: 'Hoàn tất', message: 'Đã cập nhật trạng thái các trạm' });
+    };
 
     // Gọi render khi chuyển sang tab điều khiển trạm
     if (navStationControl) {
@@ -513,33 +844,72 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 1. Reset Device
-    document.getElementById('btn-reset-device')?.addEventListener('click', () => {
+    document.getElementById('btn-reset-device')?.addEventListener('click', async () => {
         if (!currentStationId) return;
-        if (confirm(`Bạn có chắc muốn khởi động lại ${currentStationId}?`)) {
-            // Mock API Call
-            console.log(`[MOCK API] Sending RESET command to ${currentStationId}`);
-            showToast({ type: 'success', title: 'Đã gửi lệnh', message: `Đang khởi động lại ${currentStationId}...` });
-            closeControlModal();
+
+        if (confirm(`Bạn có chắc muốn khởi động lại ${currentStationId}? Thiết bị sẽ mất kết nối tạm thời.`)) {
+            const btn = document.getElementById('btn-reset-device');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+            btn.disabled = true;
+
+            try {
+                await sendDeviceCommand(currentStationId, 'RESET');
+                showToast({ type: 'success', title: 'Thành công', message: `Đã gửi lệnh khởi động lại ${currentStationId}` });
+                closeControlModal();
+                // Refresh status sau 5s
+                setTimeout(() => renderStationList(), 5000);
+            } catch (error) {
+                showToast({ type: 'error', title: 'Lỗi', message: error.message });
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
     });
 
     // 2. Set Interval
-    document.getElementById('btn-set-interval')?.addEventListener('click', () => {
+    document.getElementById('btn-set-interval')?.addEventListener('click', async () => {
         if (!currentStationId) return;
-        const interval = document.getElementById('interval-input').value;
-        // Mock API Call
-        console.log(`[MOCK API] Sending INTERVAL command to ${currentStationId}: ${interval}s`);
-        showToast({ type: 'success', title: 'Cập nhật thành công', message: `Tần suất gửi của ${currentStationId} là ${interval}s.` });
+
+        const interval = parseInt(document.getElementById('interval-input').value);
+
+        if (isNaN(interval) || interval < 5 || interval > 3600) {
+            showToast({ type: 'error', title: 'Lỗi', message: 'Tần suất phải từ 5 đến 3600 giây' });
+            return;
+        }
+
+        const btn = document.getElementById('btn-set-interval');
+        const originalText = btn.textContent;
+        btn.textContent = 'Đang gửi...';
+        btn.disabled = true;
+
+        try {
+            await sendDeviceCommand(currentStationId, 'INTERVAL', { val: interval });
+            showToast({ type: 'success', title: 'Thành công', message: `Tần suất gửi của ${currentStationId} đã được đặt thành ${interval}s` });
+        } catch (error) {
+            showToast({ type: 'error', title: 'Lỗi', message: error.message });
+        } finally {
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }
     });
 
     // 3. Toggle Alert
-    document.getElementById('alert-toggle')?.addEventListener('change', (e) => {
+    document.getElementById('alert-toggle')?.addEventListener('change', async (e) => {
         if (!currentStationId) return;
+
         const isAlertOn = e.target.checked;
-        // Mock API Call
-        console.log(`[MOCK API] Sending ALERT command to ${currentStationId}: ${isAlertOn}`);
         const stateText = isAlertOn ? 'BẬT' : 'TẮT';
-        showToast({ type: 'info', title: 'Cảnh báo', message: `Đã ${stateText} cảnh báo trên ${currentStationId}.` });
+
+        try {
+            await sendDeviceCommand(currentStationId, 'ALERT', { enabled: isAlertOn });
+            showToast({ type: 'success', title: 'Thành công', message: `Đã ${stateText} cảnh báo trên ${currentStationId}` });
+        } catch (error) {
+            // Revert toggle nếu lỗi
+            e.target.checked = !isAlertOn;
+            showToast({ type: 'error', title: 'Lỗi', message: error.message });
+        }
     });
 
     // 4. Update Firmware (OTA)
@@ -623,19 +993,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 xhr.send(file);
             });
 
-            // 3. Send MQTT Command via API
+            // 3. Send MQTT Command via real API
             statusText.textContent = 'Đang gửi lệnh cập nhật...';
-            const firmwareUrl = presignedData.finalURL; // URL of the uploaded file
+            const firmwareUrl = presignedData.finalURL || presignedData.uploadURL?.split('?')[0];
 
-            // Mock API call to trigger MQTT (Replace with real endpoint when available)
-            // Assuming we have an endpoint to send commands
-            console.log(`[MOCK API] Sending UPDATE_FIRMWARE to ${currentStationId} with URL: ${firmwareUrl}`);
-
-            // Simulate API delay
-            await new Promise(r => setTimeout(r, 1000));
+            await sendDeviceCommand(currentStationId, 'UPDATE_FIRMWARE', { url: firmwareUrl });
 
             showToast({ type: 'success', title: 'Thành công', message: 'Đã gửi lệnh cập nhật Firmware!' });
             statusText.textContent = 'Hoàn tất! Thiết bị sẽ tự động cập nhật.';
+            progressBar.style.background = '#4CAF50';
 
             // Clear input
             fileInput.value = '';
@@ -648,17 +1014,15 @@ document.addEventListener('DOMContentLoaded', () => {
         } finally {
             btn.disabled = false;
             // Hide progress after a delay if successful
-            if (progressBar.style.background !== 'rgb(255, 68, 68)') { // Check if not red
-                setTimeout(() => { progressContainer.style.display = 'none'; }, 5000);
-            }
+            setTimeout(() => { progressContainer.style.display = 'none'; }, 5000);
         }
     });
 
     // 5. Update WiFi (Online)
-    document.getElementById('btn-update-wifi')?.addEventListener('click', () => {
+    document.getElementById('btn-update-wifi')?.addEventListener('click', async () => {
         if (!currentStationId) return;
 
-        const ssid = document.getElementById('wifi-ssid').value;
+        const ssid = document.getElementById('wifi-ssid').value.trim();
         const pass = document.getElementById('wifi-pass').value;
 
         if (!ssid) {
@@ -667,13 +1031,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (confirm(`Bạn có chắc muốn đổi WiFi cho ${currentStationId} thành "${ssid}"? Thiết bị sẽ khởi động lại.`)) {
-            // Mock API Call
-            console.log(`[MOCK API] Sending SET_WIFI command to ${currentStationId}: SSID=${ssid}, PASS=${pass}`);
-            showToast({ type: 'success', title: 'Đã gửi lệnh', message: `Đang cập nhật WiFi cho ${currentStationId}...` });
+            const btn = document.getElementById('btn-update-wifi');
+            const originalText = btn.textContent;
+            btn.textContent = 'Đang gửi...';
+            btn.disabled = true;
 
-            // Clear inputs
-            document.getElementById('wifi-ssid').value = '';
-            document.getElementById('wifi-pass').value = '';
+            try {
+                await sendDeviceCommand(currentStationId, 'SET_WIFI', { ssid: ssid, pass: pass });
+                showToast({ type: 'success', title: 'Thành công', message: `Đã gửi cấu hình WiFi mới cho ${currentStationId}` });
+
+                // Clear inputs
+                document.getElementById('wifi-ssid').value = '';
+                document.getElementById('wifi-pass').value = '';
+
+                closeControlModal();
+            } catch (error) {
+                showToast({ type: 'error', title: 'Lỗi', message: error.message });
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
         }
     });
 

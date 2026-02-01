@@ -15,9 +15,6 @@
 #include "secrets.h"
 #include <math.h>
 
-// =================================================================
-//                      2. CẤU HÌNH HỆ THỐNG
-// =================================================================
 #define DHT11Pin 5
 #define DHTType DHT11
 #define PIN_TICK 27
@@ -30,9 +27,6 @@
 #define WARNING_THRESHOLD 1.0
 #define DANGER_THRESHOLD  5.0
 
-// =================================================================
-//              3. KHỞI TẠO ĐỐI TƯỢNG VÀ BIẾN TOÀN CỤC
-// =================================================================
 DHT HT(DHT11Pin, DHTType);
 TFT_eSPI tft = TFT_eSPI(); 
 TFT_eSprite spr = TFT_eSprite(&tft);
@@ -144,7 +138,6 @@ void connectAWS() {
     WiFi.mode(WIFI_STA);
     NTPConnect();
 
-    // ✅ THAY ĐỔI: Sử dụng các hàm cài đặt chứng chỉ của ESP32
     net.setCACert(AWS_CERT_CA);
     net.setCertificate(AWS_CERT_CRT);
     net.setPrivateKey(AWS_CERT_PRIVATE);
@@ -416,6 +409,19 @@ void readData() {
         float newTemp = HT.readTemperature();
         if (!isnan(newHumi)) humi = newHumi;
         if (!isnan(newTemp)) tempC = newTemp;
+
+        // --- [BẮT ĐẦU: ĐOẠN CODE CẦN THÊM ĐỂ HIỆN LOG] ---
+        Serial.print("[LOOP] Time: ");
+        Serial.print(timeClient.getFormattedTime()); // Cần đảm bảo timeClient đã update
+        Serial.print(" | Counts: ");
+        Serial.print(currentCounts);
+        Serial.print(" | CPS: ");
+        Serial.print(cps);
+        Serial.print(" | uSv/h: ");
+        Serial.print(uSv, 3);
+        Serial.print(" | Temp: ");
+        Serial.println(tempC);
+        // --- [KẾT THÚC: ĐOẠN CODE CẦN THÊM] ---
 
         // Logic điều khiển lưu trữ (Trạm 1)
         timeClient.update();

@@ -260,3 +260,119 @@ body {
     width: 100%;
     height: 100%;
 }
+
+/* =====================================================
+   DARK MODE ENHANCEMENTS
+   ===================================================== */
+
+[data-theme="dark"] body {
+    background: var(--dashboard-bg-gradient);
+}
+
+[data-theme="dark"] .station-card {
+    background: rgba(22, 27, 34, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+}
+
+[data-theme="dark"] .station-card:hover {
+    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.4);
+    border-color: rgba(10, 132, 255, 0.3);
+}
+
+[data-theme="dark"] .station-header {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .station-status {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .last-updated {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .chart-container {
+    background: rgba(22, 27, 34, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+}
+
+[data-theme="dark"] .main-chart-header h2 {
+    color: #e6edf3;
+}
+
+[data-theme="dark"] .global-filter-buttons {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .global-filter-buttons button {
+    color: #8b949e;
+}
+
+[data-theme="dark"] .global-filter-buttons button:hover {
+    color: #e6edf3;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .global-filter-buttons button.active {
+    background: linear-gradient(135deg, #0a84ff, #5e5ce6);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
+}
+
+[data-theme="dark"] .global-chart-actions button {
+    color: #8b949e;
+}
+
+[data-theme="dark"] .global-chart-actions button:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #0a84ff;
+}
+
+[data-theme="dark"] .sub-values {
+    border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .sub-value {
+    color: #e6edf3;
+}
+
+[data-theme="dark"] .sub-value-label {
+    color: #8b949e;
+}
+
+[data-theme="dark"] .live-status-column {
+    background: transparent;
+}
+
+[data-theme="dark"] .card-icon {
+    background: rgba(10, 132, 255, 0.15);
+}
+
+[data-theme="dark"] .main-metric-label {
+    color: #8b949e;
+}
+
+[data-theme="dark"] .usv-status.good {
+    background: rgba(63, 185, 80, 0.15);
+    color: #3fb950;
+}
+
+[data-theme="dark"] .usv-status.warning {
+    background: rgba(210, 153, 34, 0.15);
+    color: #d29922;
+}
+
+[data-theme="dark"] .usv-status.danger {
+    background: rgba(248, 81, 73, 0.15);
+    color: #f85149;
+}
+
+[data-theme="dark"] .loading-overlay {
+    background: rgba(13, 17, 23, 0.8);
+}
+
+[data-theme="dark"] .separator {
+    color: #30363d;
+}

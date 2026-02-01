@@ -7,12 +7,58 @@ document.addEventListener('DOMContentLoaded', () => {
     const iconChat = chatToggleButton.querySelector('.icon-chat');
     const iconClose = chatToggleButton.querySelector('.icon-close');
 
-    // ✨ [MỚI] Biến để quản lý hiệu ứng "đang gõ" của chỉ báo
+    // ✨ Biến để quản lý hiệu ứng "đang gõ" của chỉ báo
     let typingIndicatorInterval = null;
+
+    // ✨ Key lưu trữ chat trong localStorage
+    const CHAT_STORAGE_KEY = 'iot_chat_history';
+    const MAX_CHAT_MESSAGES = 50; // Giới hạn số tin nhắn lưu
 
     if (!chatToggleButton || !chatWindow || !chatMessages || !chatInput || !chatSendButton) {
         console.error("Không thể khởi tạo Chatbot: Thiếu các phần tử HTML.");
         return;
+    }
+
+    // ✨ Hàm lưu tin nhắn vào localStorage
+    function saveChatMessage(sender, text) {
+        try {
+            const history = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '[]');
+            history.push({
+                sender,
+                text,
+                timestamp: new Date().toISOString()
+            });
+            // Giữ tối đa MAX_CHAT_MESSAGES tin nhắn cuối
+            if (history.length > MAX_CHAT_MESSAGES) {
+                history.splice(0, history.length - MAX_CHAT_MESSAGES);
+            }
+            localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(history));
+        } catch (e) {
+            console.error('Lỗi lưu chat:', e);
+        }
+    }
+
+    // ✨ Hàm tải lịch sử chat từ localStorage
+    function loadChatHistory() {
+        try {
+            const history = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '[]');
+            if (history.length > 0) {
+                // Thêm tin nhắn từ lịch sử (không lưu lại vào storage)
+                history.forEach(msg => {
+                    addMessageToChat(msg.sender, msg.text, false);
+                });
+                scrollToBottom();
+            }
+        } catch (e) {
+            console.error('Lỗi tải lịch sử chat:', e);
+        }
+    }
+
+    // ✨ Hàm xóa lịch sử chat
+    function clearChatHistory() {
+        localStorage.removeItem(CHAT_STORAGE_KEY);
+        chatMessages.innerHTML = '';
+        addMessageToChat('bot', '🗑️ Đã xóa lịch sử chat. Tôi có thể giúp gì cho bạn?', false);
     }
 
     const CHAT_API_ENDPOINT = 'https://z2c6um5ew3.execute-api.ap-southeast-1.amazonaws.com/chat-ai';
@@ -33,7 +79,61 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const handleSendMessage = () => {
+    /**
+     * ✨ Gọi API với retry logic cho lỗi 429/503
+     * @param {string} url - API endpoint
+     * @param {object} options - fetch options
+     * @param {number} maxRetries - số lần thử lại tối đa
+     * @param {number} attempt - lần thử hiện tại
+     */
+    const fetchWithRetry = async (url, options, maxRetries = 3, attempt = 0) => {
+        try {
+            const response = await fetch(url, options);
+
+            // Nếu gặp lỗi 429 (Rate Limit), chờ 30s rồi thử lại
+            if (response.status === 429 && attempt < maxRetries) {
+                const delay = 30000; // Gemini yêu cầu chờ ~30s
+                console.log(`Rate limit (429). Chờ ${delay / 1000}s rồi thử lại (lần ${attempt + 1}/${maxRetries})...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                return fetchWithRetry(url, options, maxRetries, attempt + 1);
+            }
+
+            // Nếu gặp lỗi 503, chờ 5s rồi thử lại
+            if (response.status === 503 && attempt < maxRetries) {
+                const delay = 5000;
+                console.log(`Service unavailable (503). Chờ ${delay / 1000}s rồi thử lại (lần ${attempt + 1}/${maxRetries})...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                return fetchWithRetry(url, options, maxRetries, attempt + 1);
+            }
+
+            // Kiểm tra nếu body chứa RATE_LIMIT
+            if (response.status === 500 && attempt < maxRetries) {
+                const clonedResponse = response.clone();
+                try {
+                    const text = await clonedResponse.text();
+                    if (text.includes('RATE_LIMIT')) {
+                        const delay = 30000;
+                        console.log(`Rate limit từ Gemini. Chờ ${delay / 1000}s rồi thử lại (lần ${attempt + 1}/${maxRetries})...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        return fetchWithRetry(url, options, maxRetries, attempt + 1);
+                    }
+                } catch (e) { /* ignore */ }
+            }
+
+            return response;
+        } catch (error) {
+            // Retry cho lỗi network
+            if (attempt < maxRetries) {
+                const delay = 3000;
+                console.log(`Lỗi network. Thử lại sau ${delay / 1000}s...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                return fetchWithRetry(url, options, maxRetries, attempt + 1);
+            }
+            throw error;
+        }
+    };
+
+    const handleSendMessage = async () => {
         const prompt = chatInput.value.trim();
         if (!prompt) return;
 
@@ -47,49 +147,47 @@ document.addEventListener('DOMContentLoaded', () => {
         chatInput.value = '';
         setTypingIndicator(true);
 
-        fetch(CHAT_API_ENDPOINT, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
-            },
-            body: JSON.stringify({ prompt: prompt })
-        })
-            .then(async response => {
-                if (!response.ok) {
-                    // ✨ [CẢI TIẾN] Xử lý lỗi tốt hơn: đọc body (JSON hoặc text) để hiển thị thông tin lỗi chi tiết
-                    try {
-                        const text = await response.text();
-                        let parsed;
-                        try {
-                            parsed = JSON.parse(text);
-                        } catch (e) {
-                            parsed = null;
-                        }
-                        console.error('Server responded with non-OK status', response.status, response.statusText, text);
-                        const errMsg = parsed ? (parsed.error || parsed.message || JSON.stringify(parsed)) : (text || response.statusText);
-                        throw new Error(`Lỗi máy chủ: ${response.status} - ${errMsg}`);
-                    } catch (e) {
-                        // Nếu đọc body cũng lỗi (rất hiếm), fallback về statusText
-                        throw new Error(`Lỗi máy chủ: ${response.status} ${response.statusText}`);
-                    }
-                }
-                return response.json();
-            })
-            .then(data => {
-                setTypingIndicator(false);
-                addMessageToChat('bot', data.response);
-            })
-            .catch(error => {
-                console.error("Lỗi khi gọi API chat:", error);
-                setTypingIndicator(false);
-                // ✨ [CẢI TIẾN] Thông báo lỗi thân thiện hơn cho trường hợp timeout
-                let errorMessage = `Xin lỗi, tôi gặp lỗi: ${error.message}`;
-                if (error.message.includes('504') || error.message.toLowerCase().includes('timeout')) {
-                    errorMessage = 'Xin lỗi, yêu cầu của bạn mất quá nhiều thời gian để xử lý. Vui lòng thử lại sau.';
-                }
-                addMessageToChat('bot', errorMessage);
+        try {
+            const response = await fetchWithRetry(CHAT_API_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({ prompt: prompt })
             });
+
+            if (!response.ok) {
+                const text = await response.text();
+                let parsed;
+                try {
+                    parsed = JSON.parse(text);
+                } catch (e) {
+                    parsed = null;
+                }
+                console.error('Server responded with non-OK status', response.status, text);
+                const errMsg = parsed ? (parsed.error || parsed.message || JSON.stringify(parsed)) : (text || response.statusText);
+                throw new Error(`Lỗi máy chủ: ${response.status} - ${errMsg}`);
+            }
+
+            const data = await response.json();
+            setTypingIndicator(false);
+            addMessageToChat('bot', data.response);
+
+        } catch (error) {
+            console.error("Lỗi khi gọi API chat:", error);
+            setTypingIndicator(false);
+
+            let errorMessage = `Xin lỗi, tôi gặp lỗi: ${error.message}`;
+            if (error.message.includes('503')) {
+                errorMessage = 'Hệ thống AI đang bận. Vui lòng thử lại sau vài giây.';
+            } else if (error.message.includes('429')) {
+                errorMessage = 'Đã vượt quá giới hạn yêu cầu. Vui lòng chờ 1 phút rồi thử lại.';
+            } else if (error.message.includes('504') || error.message.toLowerCase().includes('timeout')) {
+                errorMessage = 'Yêu cầu mất quá nhiều thời gian. Vui lòng thử lại.';
+            }
+            addMessageToChat('bot', errorMessage);
+        }
     };
 
     chatSendButton.addEventListener('click', handleSendMessage);
@@ -99,8 +197,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    async function addMessageToChat(sender, text) {
+    async function addMessageToChat(sender, text, saveToStorage = true) {
         const isBot = sender === 'bot';
+
+        // ✨ Lưu tin nhắn vào localStorage (trừ khi đang load từ history)
+        if (saveToStorage) {
+            saveChatMessage(sender, text);
+        }
 
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender}-message`;
@@ -112,8 +215,12 @@ document.addEventListener('DOMContentLoaded', () => {
         chatMessages.appendChild(messageDiv);
 
         if (isBot) {
-            // ✨ [MỚI] Bắt đầu hiệu ứng gõ chữ cho bot
-            await typeMessage(contentDiv, text);
+            // Hiệu ứng gõ chữ cho bot (bỏ qua khi load history)
+            if (saveToStorage) {
+                await typeMessage(contentDiv, text);
+            } else {
+                contentDiv.innerHTML = markdownToHtml(text);
+            }
         } else {
             contentDiv.textContent = text;
         }
@@ -188,4 +295,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function scrollToBottom() {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
+
+    // ✨ Tải lịch sử chat khi khởi tạo
+    loadChatHistory();
+
+    // ✨ Hỗ trợ lệnh /clear để xóa lịch sử
+    chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && chatInput.value.trim().toLowerCase() === '/clear') {
+            e.preventDefault();
+            chatInput.value = '';
+            clearChatHistory();
+        }
+    });
 });

@@ -366,27 +366,52 @@
     --backdrop-blur: blur(16px);
     --card-radius: 24px;
 
-    /* Backgrounds */
+    /* Backgrounds - Light Mode */
     --body-bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     --body-background: #f0f2f5;
-    /* Fallback */
+    --bg-color: #ffffff;
+    --background-color: #f0f2f5;
+    --card-background: #ffffff;
+    --card-background-rgb: 255, 255, 255;
 
     /* Text Colors */
     --text-color: #1d1d1f;
     --text-muted: rgba(29, 29, 31, 0.7);
+    --text-color-muted: #6c757d;
     --heading-color: #000000;
+
+    /* Border & Shadow - Light Mode */
+    --border-color: #dee2e6;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --card-hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 
     /* Status Colors */
     --status-good: #34c759;
+    --status-good-bg: #e9f7ec;
+    --status-good-text: #28a745;
     --status-warning: #ff9f0a;
+    --status-warning-bg: #fff8e1;
+    --status-warning-text: #ffc107;
     --status-danger: #ff3b30;
+    --status-danger-bg: #fbe9e7;
+    --status-danger-text: #dc3545;
 
     /* Chart & Data Colors */
     --chart-grid: rgba(0, 0, 0, 0.05);
+    --chart-background: #ffffff;
 
     /* Transitions */
     --transition-fast: 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     --transition-smooth: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --transition-duration: 0.3s;
+    --transition-timing: ease;
+
+    /* Header - Light Mode */
+    --header-bg: rgba(255, 255, 255, 0.7);
+    --header-bg-scrolled: rgba(255, 255, 255, 0.95);
+    --primary-glow: rgba(0, 122, 255, 0.1);
+    --primary-color-hover: #0056b3;
 
     /* Connector Colors for Architecture Diagram */
     --connector-color-ingest: #3b82f6;
@@ -404,21 +429,50 @@
     --secondary-color: #5e5ce6;
 
     /* Glassmorphism Variables - Dark */
-    --glass-bg: rgba(20, 20, 30, 0.4);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-bg: rgba(22, 27, 34, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.08);
     --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
 
     /* Backgrounds */
-    --body-bg-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    --body-bg-gradient: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%);
     --body-background: #0d1117;
+    --bg-color: #0d1117;
+    --background-color: #0d1117;
+    --card-background: #161b22;
+    --card-background-rgb: 22, 27, 34;
 
     /* Text Colors */
-    --text-color: #f5f5f7;
-    --text-muted: rgba(245, 245, 247, 0.6);
+    --text-color: #e6edf3;
+    --text-muted: #8b949e;
+    --text-color-muted: #8b949e;
     --heading-color: #ffffff;
 
+    /* Border & Shadow */
+    --border-color: #30363d;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-color: rgba(0, 0, 0, 0.5);
+
     /* Chart & Data Colors */
-    --chart-grid: rgba(255, 255, 255, 0.05);
+    --chart-grid: rgba(255, 255, 255, 0.06);
+    --chart-background: #161b22;
+
+    /* Status Colors - Dark */
+    --status-good: #3fb950;
+    --status-good-bg: rgba(46, 160, 67, 0.15);
+    --status-good-text: #3fb950;
+    --status-warning: #d29922;
+    --status-warning-bg: rgba(187, 128, 9, 0.15);
+    --status-warning-text: #d29922;
+    --status-danger: #f85149;
+    --status-danger-bg: rgba(248, 81, 73, 0.15);
+    --status-danger-text: #f85149;
+
+    /* Header */
+    --header-bg: rgba(13, 17, 23, 0.85);
+    --header-bg-scrolled: rgba(22, 27, 34, 0.95);
+    --primary-glow: rgba(10, 132, 255, 0.2);
+    --card-hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --primary-color-hover: #409cff;
 }
 
 /* Global Reset & Typography */
@@ -4640,50 +4694,15 @@ body {
 }
 
 /* =================================================================
-   BIẾN TOÀN CỤC VÀ THIẾT LẬP CƠ BẢN
+   BIẾN TOÀN CỤC VÀ THIẾT LẬP CƠ BẢN (DASHBOARD SPECIFIC)
+   Note: Light mode defaults - được kế thừa từ :root ở dòng 355
+   Dark mode được xử lý bởi [data-theme="dark"] ở dòng 400
    ================================================================= */
-:root {
-    --bg-color: #ffffff;
-    --card-background: #f8f9fa;
-    --text-color: #212529;
-    --text-muted: #6c757d;
-    --border-color: #dee2e6;
-    --primary-color: #007aff;
-    --primary-glow: rgba(0, 122, 255, 0.1);
-    --secondary-color: #ff9500;
-    --radiation-color: #4bc0c0;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 
-    --status-good-bg: #e9f7ec;
-    --status-good-text: #28a745;
-    --status-warning-bg: #fff8e1;
-    --status-warning-text: #ffc107;
-    --status-danger-bg: #fbe9e7;
-    --status-danger-text: #dc3545;
-}
-
-:root.dark-mode {
-    --bg-color: #0d1117;
-    --card-background: #161b22;
-    --text-color: #c9d1d9;
-    --text-muted: #8b949e;
-    --border-color: #30363d;
-    --primary-color: #0a84ff;
-    --primary-glow: rgba(10, 132, 255, 0.15);
-    --secondary-color: #ff9f0a;
-    --radiation-color: #7ce0e0;
-
-    --status-good-bg: rgba(46, 160, 67, 0.15);
-    --status-good-text: #3fb950;
-    --status-warning-bg: rgba(212, 167, 49, 0.15);
-    --status-warning-text: #d4a731;
-    --status-danger-bg: rgba(248, 81, 73, 0.15);
-    --status-danger-text: #f85149;
-}
-
-body {
+/* Dashboard body - sử dụng các biến đã định nghĩa */
+body.dashboard-page {
     font-family: 'Inter', sans-serif;
-    background-color: var(--bg-color);
+    background-color: var(--bg-color, var(--body-background));
     color: var(--text-color);
     margin: 0;
     transition: background-color 0.3s, color 0.3s;
@@ -6055,26 +6074,718 @@ button:hover,
     stroke-width: 3px;
     filter: drop-shadow(0 0 5px var(--primary-color));
 }
+
 /* --- Màu sắc riêng cho từng loại đường nối --- */
-.connector-line--ingest { stroke: var(--connector-color-ingest); }
-.connector-line--processing { stroke: var(--connector-color-processing); }
-.connector-line--response { stroke: var(--connector-color-response); }
-.connector-line--request { stroke: var(--connector-color-request); }
-.connector-line--ai { stroke: var(--connector-color-ai); }
-.connector-line--storage { stroke: var(--connector-color-storage); }
+.connector-line--ingest {
+    stroke: var(--connector-color-ingest);
+}
+
+.connector-line--processing {
+    stroke: var(--connector-color-processing);
+}
+
+.connector-line--response {
+    stroke: var(--connector-color-response);
+}
+
+.connector-line--request {
+    stroke: var(--connector-color-request);
+}
+
+.connector-line--ai {
+    stroke: var(--connector-color-ai);
+}
+
+.connector-line--storage {
+    stroke: var(--connector-color-storage);
+}
 
 /* Màu cho chấm tròn (marker) và chấm chạy (dot) */
-.connector-arrow-circle--ingest, .connector-dot--ingest { fill: var(--connector-color-ingest); }
-.connector-arrow-circle--processing, .connector-dot--processing { fill: var(--connector-color-processing); }
-.connector-arrow-circle--response, .connector-dot--response { fill: var(--connector-color-response); }
-.connector-arrow-circle--request, .connector-dot--request { fill: var(--connector-color-request); }
-.connector-arrow-circle--ai, .connector-dot--ai { fill: var(--connector-color-ai); }
-.connector-arrow-circle--storage, .connector-dot--storage { fill: var(--connector-color-storage); }
+.connector-arrow-circle--ingest,
+.connector-dot--ingest {
+    fill: var(--connector-color-ingest);
+}
+
+.connector-arrow-circle--processing,
+.connector-dot--processing {
+    fill: var(--connector-color-processing);
+}
+
+.connector-arrow-circle--response,
+.connector-dot--response {
+    fill: var(--connector-color-response);
+}
+
+.connector-arrow-circle--request,
+.connector-dot--request {
+    fill: var(--connector-color-request);
+}
+
+.connector-arrow-circle--ai,
+.connector-dot--ai {
+    fill: var(--connector-color-ai);
+}
+
+.connector-arrow-circle--storage,
+.connector-dot--storage {
+    fill: var(--connector-color-storage);
+}
 
 /* Tăng cường hiệu ứng Active */
 .connector-line.active {
     opacity: 1;
-    stroke-width: 4px; /* Tăng độ dày */
-    filter: drop-shadow(0 0 8px currentColor); /* Glow mạnh hơn theo màu hiện tại */
-    z-index: 10; /* Cố gắng đưa lên trên (dù trong SVG z-index không hoạt động như HTML nhưng stroke-width to hơn sẽ đè lên) */
+    stroke-width: 4px;
+    /* Tăng độ dày */
+    filter: drop-shadow(0 0 8px currentColor);
+    /* Glow mạnh hơn theo màu hiện tại */
+    z-index: 10;
+    /* Cố gắng đưa lên trên (dù trong SVG z-index không hoạt động như HTML nhưng stroke-width to hơn sẽ đè lên) */
 }
+
+/* =================================================================
+   COMPREHENSIVE DARK MODE STYLES
+   ================================================================= */
+
+/* Header Dark Mode */
+[data-theme="dark"] .main-header {
+    background: rgba(13, 17, 23, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .main-header.scrolled {
+    background: rgba(22, 27, 34, 0.95);
+}
+
+[data-theme="dark"] .logo-text {
+    color: #e6edf3;
+}
+
+[data-theme="dark"] .main-nav a {
+    color: #8b949e;
+}
+
+[data-theme="dark"] .main-nav a:hover,
+[data-theme="dark"] .main-nav a.active {
+    color: #0a84ff;
+}
+
+[data-theme="dark"] .header-actions .header-action-btn,
+[data-theme="dark"] .header-actions #theme-switch,
+[data-theme="dark"] .header-actions #sound-toggle {
+    border-color: #30363d;
+    color: #8b949e;
+}
+
+[data-theme="dark"] .header-actions .header-action-btn:hover,
+[data-theme="dark"] .header-actions #theme-switch:hover,
+[data-theme="dark"] .header-actions #sound-toggle:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e6edf3;
+    border-color: #0a84ff;
+}
+
+/* Hero Section Dark Mode */
+[data-theme="dark"] .hero,
+[data-theme="dark"] .project-introduction-section {
+    background: linear-gradient(135deg, rgba(13, 17, 23, 0.9) 0%, rgba(22, 27, 34, 0.95) 100%);
+}
+
+[data-theme="dark"] .hero-content h1,
+[data-theme="dark"] .hero-content h2 {
+    color: #e6edf3;
+}
+
+[data-theme="dark"] .hero-content p {
+    color: #8b949e;
+}
+
+[data-theme="dark"] .hero-button {
+    background: linear-gradient(135deg, #0a84ff, #5e5ce6);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 4px 15px rgba(10, 132, 255, 0.3);
+}
+
+[data-theme="dark"] .hero-button:hover {
+    background: linear-gradient(135deg, #409cff, #7c7ae6);
+    box-shadow: 0 6px 20px rgba(10, 132, 255, 0.4);
+}
+
+/* Info Cards Dark Mode */
+[data-theme="dark"] .info-section,
+[data-theme="dark"] .tech-stack-section {
+    background: rgba(22, 27, 34, 0.6);
+}
+
+[data-theme="dark"] .info-card,
+[data-theme="dark"] .tech-card {
+    background: rgba(22, 27, 34, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(10px);
+}
+
+[data-theme="dark"] .info-card:hover,
+[data-theme="dark"] .tech-card:hover {
+    border-color: rgba(10, 132, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .info-card h3,
+[data-theme="dark"] .tech-card h3 {
+    color: #e6edf3;
+}
+
+[data-theme="dark"] .info-card p,
+[data-theme="dark"] .tech-card p {
+    color: #8b949e;
+}
+
+/* Section Titles Dark Mode */
+[data-theme="dark"] .section-title,
+[data-theme="dark"] .project-title {
+    color: #e6edf3;
+}
+
+[data-theme="dark"] .section-subtitle {
+    color: #8b949e;
+}
+
+/* Footer Dark Mode */
+[data-theme="dark"] footer,
+[data-theme="dark"] .main-footer {
+    background: rgba(13, 17, 23, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    color: #8b949e;
+}
+
+[data-theme="dark"] .footer-link {
+    color: #8b949e;
+}
+
+[data-theme="dark"] .footer-link:hover {
+    color: #0a84ff;
+}
+
+/* Form Elements Dark Mode */
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+    background: #161b22;
+    color: #e6edf3;
+    border: 1px solid #30363d;
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+    border-color: #0a84ff;
+    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
+}
+
+[data-theme="dark"] ::placeholder {
+    color: #6e7681;
+}
+
+/* Buttons Dark Mode */
+[data-theme="dark"] .btn,
+[data-theme="dark"] button {
+    background: #21262d;
+    color: #e6edf3;
+    border: 1px solid #30363d;
+}
+
+[data-theme="dark"] .btn:hover,
+[data-theme="dark"] button:hover {
+    background: #30363d;
+    border-color: #8b949e;
+}
+
+[data-theme="dark"] .btn-primary {
+    background: linear-gradient(135deg, #0a84ff, #5e5ce6);
+    color: #ffffff;
+    border: none;
+}
+
+[data-theme="dark"] .btn-primary:hover {
+    background: linear-gradient(135deg, #409cff, #7c7ae6);
+}
+
+/* Toast & Notifications Dark Mode */
+[data-theme="dark"] .toast {
+    background: rgba(22, 27, 34, 0.95);
+    border: 1px solid #30363d;
+    color: #e6edf3;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Modal Dark Mode */
+[data-theme="dark"] .modal-content {
+    background: #161b22;
+    border: 1px solid #30363d;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .modal-header {
+    border-bottom-color: #30363d;
+}
+
+[data-theme="dark"] .modal-footer {
+    border-top-color: #30363d;
+}
+
+/* Dropdown Dark Mode */
+[data-theme="dark"] .dropdown-menu {
+    background: #161b22;
+    border: 1px solid #30363d;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .dropdown-item {
+    color: #e6edf3;
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+    background: #21262d;
+}
+
+/* Glass Panel Dark Mode */
+[data-theme="dark"] .glass-panel {
+    background: rgba(22, 27, 34, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+}
+
+/* Scrollbar Dark Mode */
+[data-theme="dark"] ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: #161b22;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: #30363d;
+    border-radius: 4px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: #484f58;
+}
+
+/* Page Container Dark Mode */
+[data-theme="dark"] .page-container {
+    background: transparent;
+}
+
+/* Links Dark Mode */
+[data-theme="dark"] a {
+    color: #58a6ff;
+}
+
+[data-theme="dark"] a:hover {
+    color: #79c0ff;
+}
+
+/* Code/Pre Dark Mode */
+[data-theme="dark"] code,
+[data-theme="dark"] pre {
+    background: #161b22;
+    color: #e6edf3;
+    border: 1px solid #30363d;
+}
+
+/* Table Dark Mode */
+[data-theme="dark"] table {
+    background: #161b22;
+}
+
+[data-theme="dark"] th {
+    background: #21262d;
+    color: #e6edf3;
+    border-color: #30363d;
+}
+
+[data-theme="dark"] td {
+    color: #e6edf3;
+    border-color: #30363d;
+}
+
+[data-theme="dark"] tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Status indicators Dark Mode */
+[data-theme="dark"] .status-online,
+[data-theme="dark"] .status-connected {
+    color: #3fb950;
+}
+
+[data-theme="dark"] .status-offline,
+[data-theme="dark"] .status-disconnected {
+    color: #f85149;
+}
+
+/* Loading Spinner Dark Mode */
+[data-theme="dark"] .spinner,
+[data-theme="dark"] .loader {
+    border-color: #30363d;
+    border-top-color: #0a84ff;
+}
+
+
+
+/* =================================================================
+   DASHBOARD SPECIFIC DARK MODE FIX
+   ================================================================= */
+
+[data-theme="dark"] .live-status-column.scrollable-cards {
+    background: rgba(22, 27, 34, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .fixed-chart,
+[data-theme="dark"] .chart-container.fixed-chart {
+    background: rgba(22, 27, 34, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .chart-wrapper {
+    background: transparent;
+}
+
+[data-theme="dark"] .main-chart-wrapper {
+    background: transparent;
+}
+
+/* Fix chart title in dark mode */
+[data-theme="dark"] .main-chart-header h2 {
+    color: #e6edf3 !important;
+}
+
+/* Fix canvas background */
+[data-theme="dark"] canvas {
+    filter: none;
+}
+
+
+/* =================================================================
+   INDEX PAGE DARK MODE - COMPREHENSIVE FIX
+   ================================================================= */
+
+/* Hero Section */
+[data-theme="dark"] .hero,
+[data-theme="dark"] .project-introduction-section {
+    background: rgba(13, 17, 23, 0.95);
+}
+
+[data-theme="dark"] .hero-text h1,
+[data-theme="dark"] .hero-text p {
+    color: #e6edf3;
+}
+
+[data-theme="dark"] .intro-column h3 {
+    color: #e6edf3;
+}
+
+[data-theme="dark"] .intro-column p {
+    color: #8b949e;
+}
+
+/* Info Section */
+[data-theme="dark"] .info-section {
+    background: rgba(13, 17, 23, 0.8);
+}
+
+[data-theme="dark"] .info-card,
+[data-theme="dark"] .info-grid .glass-panel {
+    background: rgba(22, 27, 34, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(10px);
+}
+
+[data-theme="dark"] .info-card h3,
+[data-theme="dark"] .info-card p,
+[data-theme="dark"] .info-card li {
+    color: #e6edf3;
+}
+
+[data-theme="dark"] .info-card-header h3 {
+    color: #e6edf3;
+}
+
+/* Research Direction Section */
+[data-theme="dark"] .research-direction-section {
+    background: rgba(13, 17, 23, 0.8);
+}
+
+[data-theme="dark"] .research-item {
+    background: rgba(22, 27, 34, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .research-item:hover {
+    border-color: rgba(10, 132, 255, 0.3);
+}
+
+[data-theme="dark"] .research-item-content h3 {
+    color: #e6edf3;
+}
+
+[data-theme="dark"] .research-item-content p {
+    color: #8b949e;
+}
+
+[data-theme="dark"] .research-item-number {
+    color: rgba(10, 132, 255, 0.5);
+}
+
+/* Tech Stack Section */
+[data-theme="dark"] .tech-stack-section {
+    background: rgba(13, 17, 23, 0.8);
+}
+
+[data-theme="dark"] .tech-card,
+[data-theme="dark"] .tech-stack-grid .glass-panel {
+    background: rgba(22, 27, 34, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .tech-card h3,
+[data-theme="dark"] .tech-card h4,
+[data-theme="dark"] .tech-card p,
+[data-theme="dark"] .tech-card li {
+    color: #e6edf3;
+}
+
+[data-theme="dark"] .tech-card li strong {
+    color: #58a6ff;
+}
+
+/* Architecture Section */
+[data-theme="dark"] .architecture-section {
+    background: rgba(13, 17, 23, 0.95);
+}
+
+[data-theme="dark"] .architecture-section .page-title h1,
+[data-theme="dark"] .architecture-section .page-title p {
+    color: #e6edf3;
+}
+
+[data-theme="dark"] .architecture-diagram {
+    background: rgba(22, 27, 34, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 24px;
+}
+
+[data-theme="dark"] .arch-column h3 {
+    color: #e6edf3;
+}
+
+[data-theme="dark"] .arch-box {
+    background: rgba(33, 38, 45, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .arch-box:hover {
+    border-color: rgba(10, 132, 255, 0.4);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .arch-box strong {
+    color: #e6edf3;
+}
+
+[data-theme="dark"] .arch-box p,
+[data-theme="dark"] .arch-box li {
+    color: #8b949e;
+}
+
+[data-theme="dark"] .arch-box .box-icon {
+    color: #58a6ff;
+}
+
+[data-theme="dark"] .arch-trigger {
+    background: rgba(10, 132, 255, 0.1);
+    color: #58a6ff;
+}
+
+/* Architecture Legend */
+[data-theme="dark"] .architecture-legend {
+    background: rgba(22, 27, 34, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .legend-text {
+    color: #8b949e;
+}
+
+/* Page Title */
+[data-theme="dark"] .page-title h2,
+[data-theme="dark"] .page-title h1 {
+    color: #e6edf3;
+}
+
+[data-theme="dark"] .page-title p {
+    color: #8b949e;
+}
+
+/* Glass Panel - Universal */
+[data-theme="dark"] .glass-panel {
+    background: rgba(22, 27, 34, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+[data-theme="dark"] .glass-panel:hover {
+    border-color: rgba(10, 132, 255, 0.3);
+}
+
+/* Chat Widget Dark Mode */
+[data-theme="dark"] .chat-window {
+    background: rgba(22, 27, 34, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .chat-header {
+    background: linear-gradient(135deg, #0a84ff, #5e5ce6);
+}
+
+[data-theme="dark"] .chat-messages {
+    background: rgba(13, 17, 23, 0.9);
+}
+
+[data-theme="dark"] .message.bot-message .message-content {
+    background: rgba(33, 38, 45, 0.95);
+    color: #e6edf3;
+}
+
+[data-theme="dark"] .chat-input-area {
+    background: rgba(22, 27, 34, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] #chat-input {
+    background: rgba(33, 38, 45, 0.95);
+    color: #e6edf3;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] #chat-toggle-button {
+    background: linear-gradient(135deg, #0a84ff, #5e5ce6);
+}
+
+/* Aurora Background Dark Mode */
+[data-theme="dark"] .aurora-bg {
+    opacity: 0.3;
+}
+
+[data-theme="dark"] .aurora-blob {
+    filter: blur(80px);
+    opacity: 0.4;
+}
+/* =================================================================
+   FULLSCREEN MODE STYLES
+   ================================================================= */
+
+/* Fullscreen container - Light Mode */
+.chart-container:fullscreen,
+.chart-container:-webkit-full-screen,
+.chart-container:-moz-full-screen {
+    background: var(--card-background, #ffffff);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-container:fullscreen .chart-wrapper,
+.chart-container:-webkit-full-screen .chart-wrapper,
+.chart-container:-moz-full-screen .chart-wrapper {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+}
+
+/* Fullscreen container - Dark Mode */
+[data-theme="dark"] .chart-container:fullscreen,
+[data-theme="dark"] .chart-container:-webkit-full-screen,
+[data-theme="dark"] .chart-container:-moz-full-screen {
+    background: #161b22;
+}
+
+/* Fullscreen backdrop */
+::backdrop {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+[data-theme="dark"]::backdrop {
+    background: rgba(0, 0, 0, 0.95);
+}
+
+/* Ensure chart fills fullscreen */
+.chart-container:fullscreen canvas,
+.chart-container:-webkit-full-screen canvas,
+.chart-container:-moz-full-screen canvas {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* Buttons inside fullscreen should also respect theme */
+.chart-container:fullscreen button,
+.chart-container:-webkit-full-screen button {
+    background: var(--card-background, #ffffff);
+    color: var(--text-color, #1d1d1f);
+    border: 1px solid var(--border-color, #dee2e6);
+}
+
+[data-theme="dark"] .chart-container:fullscreen button,
+[data-theme="dark"] .chart-container:-webkit-full-screen button {
+    background: #21262d;
+    color: #e6edf3;
+    border: 1px solid #30363d;
+}
+
+
+/* =================================================================
+   FULLSCREEN MODE - ALTERNATIVE APPROACH USING CSS VARIABLES
+   ================================================================= */
+
+/* When in fullscreen, use CSS variables directly for theme-aware styling */
+.chart-container:fullscreen,
+.chart-container:-webkit-full-screen {
+    --fullscreen-bg: var(--card-background, #ffffff);
+    --fullscreen-text: var(--text-color, #1d1d1f);
+    background-color: var(--fullscreen-bg) !important;
+    color: var(--fullscreen-text);
+}
+
+/* Also handle fixed-chart class which is used in dashboard */
+.fixed-chart:fullscreen,
+.fixed-chart:-webkit-full-screen {
+    background: var(--card-background, #ffffff) !important;
+    padding: 30px;
+}
+
+/* Handle data-viz-section in data-analysis page */
+.data-viz-section:fullscreen,
+.data-viz-section:-webkit-full-screen {
+    background: var(--card-background, #ffffff) !important;
+    padding: 30px;
+}
+
+/* Handle glass-panel fullscreen */
+.glass-panel:fullscreen,
+.glass-panel:-webkit-full-screen {
+    background: var(--card-background, #ffffff) !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+

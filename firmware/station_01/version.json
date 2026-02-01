@@ -1,0 +1,15 @@
+{
+  "version": "1.0.1",
+  "station": "station_01",
+  "description": "Fixed OTA SSL connection issue, added version tracking",
+  "date": "2026-02-01",
+  "changelog": [
+    "Fixed 'Connection Refused' SSL error with Heap allocation",
+    "Removed incompatible setBufferSizes() for ESP32 Core 3.0+",
+    "Added URL parsing and SSL handshake debugging",
+    "Added FIRMWARE_VERSION display on Serial Monitor",
+    "Added MQTT control commands (RESET, INTERVAL, UPDATE_FIRMWARE)",
+    "TFT display shows OTA progress"
+  ],
+  "firmwareUrl": ""
+}

@@ -348,7 +348,7 @@ const chartManager = {
     initDefinitions() { if (document.getElementById('rad-chart')) appState.chartDefinitions = [{ id: 'rad', ctx: document.getElementById('rad-chart').getContext('2d'), label: 'Phóng xạ (uSv/h)', dataKey: 'uSv' }]; },
     _createLineChartConfig(chartDef) {
         const theme = (typeof getCurrentTheme === 'function' ? getCurrentTheme() : 'light');
-        const datasets = appState.stationIds.map(id => ({ label: `Trạm ${id.slice(-2)}`, data: [], borderColor: appState.config.CHART_COLORS[id][theme], backgroundColor: `${appState.config.CHART_COLORS[id][theme]}30`, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 5, borderWidth: 2 }));
+        const datasets = appState.stationIds.map(id => ({ label: `Trạm ${id.slice(-2)}`, data: [], borderColor: appState.config.CHART_COLORS[id][theme], backgroundColor: `${appState.config.CHART_COLORS[id][theme]}15`, fill: false, tension: 0.3, pointRadius: 4, pointHoverRadius: 7, pointBackgroundColor: appState.config.CHART_COLORS[id][theme], pointBorderColor: '#fff', pointBorderWidth: 2, borderWidth: 2.5, showLine: true }));
         return {
             type: 'line', data: { labels: [], datasets },
             options: {

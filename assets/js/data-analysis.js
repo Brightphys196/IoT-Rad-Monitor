@@ -62,6 +62,106 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('importDataFile').addEventListener('change', handleFileUpload);
     }
 
+    // ✨ [TỐI ƯU] Hằng số cấu hình chunking
+    const CHUNK_SIZE_DAYS = 7; // Mỗi chunk 7 ngày
+    const MAX_CONCURRENT_REQUESTS = 3; // Tối đa 3 request song song
+    const REQUEST_TIMEOUT = 60000; // 60 giây mỗi request
+
+    /**
+     * ✨ [MỚI] Fetch một chunk dữ liệu
+     */
+    async function fetchChunk(startTime, endTime, stations, signal) {
+        const response = await fetch(CONFIG.API_ENDPOINT_ANALYSIS, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                startDate: startTime,
+                endDate: endTime,
+                stations: stations
+            }),
+            signal: signal
+        });
+
+        if (!response.ok) {
+            let errorMessage = `Lỗi HTTP ${response.status}`;
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.error || errorData.message || errorMessage;
+            } catch (e) { }
+            throw new Error(errorMessage);
+        }
+
+        const json = await response.json();
+        return json.readings || [];
+    }
+
+    /**
+     * ✨ [MỚI] Chia khoảng thời gian thành các chunks
+     */
+    function createTimeChunks(startTime, endTime, chunkSizeDays) {
+        const chunks = [];
+        const chunkSizeMs = chunkSizeDays * 24 * 60 * 60 * 1000;
+        let currentStart = startTime;
+
+        while (currentStart < endTime) {
+            const currentEnd = Math.min(currentStart + chunkSizeMs, endTime);
+            chunks.push({ start: currentStart, end: currentEnd });
+            currentStart = currentEnd;
+        }
+
+        return chunks;
+    }
+
+    /**
+     * ✨ [MỚI] Fetch song song với giới hạn concurrency
+     */
+    async function fetchWithConcurrencyLimit(chunks, stations, maxConcurrent, onProgress) {
+        const allData = [];
+        let completed = 0;
+        let failed = 0;
+        let chunkIndex = 0;
+
+        // Xử lý từng batch tuần tự
+        while (chunkIndex < chunks.length) {
+            const batch = chunks.slice(chunkIndex, chunkIndex + maxConcurrent);
+            const batchStartIndex = chunkIndex;
+
+            const batchPromises = batch.map(async (chunk, idx) => {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+
+                try {
+                    const data = await fetchChunk(chunk.start, chunk.end, stations, controller.signal);
+                    clearTimeout(timeoutId);
+                    completed++;
+                    onProgress(completed, chunks.length, failed);
+                    return data;
+                } catch (error) {
+                    clearTimeout(timeoutId);
+                    failed++;
+                    console.warn(`[Chunk ${batchStartIndex + idx}] Failed:`, error.message);
+                    onProgress(completed, chunks.length, failed);
+                    return []; // Trả về mảng rỗng để tiếp tục
+                }
+            });
+
+            const batchResults = await Promise.all(batchPromises);
+
+            // Gộp kết quả từng chunk một để tránh stack overflow
+            for (const chunkData of batchResults) {
+                if (Array.isArray(chunkData)) {
+                    for (const item of chunkData) {
+                        allData.push(item);
+                    }
+                }
+            }
+
+            chunkIndex += maxConcurrent;
+        }
+
+        return { data: allData, completed, failed };
+    }
+
     async function fetchData() {
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
@@ -77,51 +177,94 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        const start = new Date(startDate).getTime();
+        const end = new Date(endDate).getTime();
+        const daysDiff = (end - start) / (1000 * 60 * 60 * 24);
+
+        // Cảnh báo nếu khoảng thời gian rất dài
+        if (daysDiff > 90) {
+            const confirmFetch = window.confirm(
+                `⚠️ Khoảng thời gian bạn chọn là ${Math.round(daysDiff)} ngày.\n\n` +
+                `Hệ thống sẽ chia thành ${Math.ceil(daysDiff / CHUNK_SIZE_DAYS)} phần và tải tuần tự.\n` +
+                `Quá trình này có thể mất vài phút.\n\n` +
+                `Bạn có muốn tiếp tục không?`
+            );
+            if (!confirmFetch) return;
+        }
+
+        const fetchButton = document.getElementById('fetchData');
+
         try {
-            // Add loading state
-            const fetchButton = document.getElementById('fetchData');
+            // Tạo các chunks
+            const chunks = createTimeChunks(start, end, CHUNK_SIZE_DAYS);
+            const totalChunks = chunks.length;
+
+            console.log(`[Data Analysis] Fetching data in ${totalChunks} chunks (${CHUNK_SIZE_DAYS} days each)`);
+
+            // Update button với progress
+            const updateProgress = (completed, total, failed) => {
+                const percent = Math.round((completed / total) * 100);
+                fetchButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${percent}% (${completed}/${total})`;
+                if (failed > 0) {
+                    fetchButton.innerHTML += ` <span style="color:#ff6b6b">(${failed} lỗi)</span>`;
+                }
+            };
+
             fetchButton.disabled = true;
-            fetchButton.textContent = 'Đang tải...';
+            fetchButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang chuẩn bị...';
 
-            // ✨ [CẢI TIẾN] Loại bỏ hoàn toàn logic tạo dữ liệu giả.
-            // Luôn gọi API thật và xử lý lỗi nếu có.
-            const response = await fetch(CONFIG.API_ENDPOINT_ANALYSIS, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    startDate: new Date(startDate).getTime(),
-                    endDate: new Date(endDate).getTime(),
-                    stations: selectedStations
-                })
-            });
+            // Fetch tất cả chunks
+            const { data, completed, failed } = await fetchWithConcurrencyLimit(
+                chunks,
+                selectedStations,
+                MAX_CONCURRENT_REQUESTS,
+                updateProgress
+            );
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ error: `Lỗi HTTP ${response.status}` }));
-                throw new Error(errorData.error || 'Không thể tải dữ liệu từ máy chủ.');
+            // Sắp xếp dữ liệu theo thời gian
+            currentData = data.sort((a, b) => a.timestamp - b.timestamp);
+
+            console.log(`[Data Analysis] Received ${currentData.length} data points (${completed} chunks succeeded, ${failed} failed)`);
+
+            if (currentData.length === 0) {
+                alert('Không có dữ liệu trong khoảng thời gian đã chọn.');
+                return;
             }
 
-            const json = await response.json();
-            // API trả về dữ liệu trong thuộc tính 'readings'
-            currentData = json.readings || [];
+            // Thông báo nếu có chunks bị lỗi
+            if (failed > 0) {
+                alert(`⚠️ Đã tải ${currentData.length} bản ghi.\n\n${failed}/${totalChunks} phần bị lỗi (có thể do mất kết nối tạm thời).\n\nDữ liệu hiển thị có thể không đầy đủ.`);
+            }
 
             // Update the visualization
             updateChart();
             updateStatistics();
 
-            // ✨ [MỚI] Reset và ẩn nút Reset Zoom khi lấy dữ liệu mới
+            // Reset và ẩn nút Reset Zoom
             if (chart) {
                 chart.resetZoom();
             }
             document.getElementById('resetZoomBtn').style.display = 'none';
 
+            console.log(`[Data Analysis] Successfully loaded ${currentData.length} records`);
+
         } catch (error) {
             console.error('Error fetching data:', error);
-            alert('Có lỗi khi tải dữ liệu. Vui lòng thử lại sau.');
+
+            let userMessage = 'Có lỗi khi tải dữ liệu.';
+
+            if (error.name === 'AbortError') {
+                userMessage = 'Yêu cầu đã hết thời gian chờ.\n\nVui lòng thử lại.';
+            } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                userMessage = 'Không thể kết nối đến máy chủ.\n\nVui lòng kiểm tra kết nối mạng.';
+            } else {
+                userMessage = `${error.message}\n\nVui lòng thử lại sau.`;
+            }
+
+            alert(userMessage);
         } finally {
-            // Reset button state
-            const fetchButton = document.getElementById('fetchData');
             fetchButton.disabled = false;
-            fetchButton.textContent = 'Lấy Dữ Liệu';
+            fetchButton.innerHTML = 'Lấy Dữ Liệu';
         }
     }
 
@@ -137,40 +280,117 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Prepare data for the chart
-        const datasets = prepareChartDatasets(currentData, parameter);
+        const datasets = prepareChartDatasets(currentData, parameter, chartType);
+
+        // ✨ [TỐI ƯU] Cấu hình scales phù hợp với loại biểu đồ
+        const isBarChart = chartType === 'bar';
+
+        const scalesConfig = {
+            x: {
+                type: isBarChart ? 'category' : 'time',
+                ...(isBarChart ? {} : {
+                    time: {
+                        unit: 'hour',
+                        displayFormats: {
+                            hour: 'DD/MM HH:mm'
+                        }
+                    }
+                }),
+                title: {
+                    display: true,
+                    text: 'Thời gian'
+                }
+            },
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: getParameterLabel(parameter)
+                }
+            }
+        };
+
+        // ✨ [TỐI ƯU] Với bar chart, aggregate data theo giờ để hiển thị rõ ràng
+        let chartLabels = undefined;
+        let chartDatasets = datasets.data;
+
+        if (isBarChart && datasets.data.length > 0 && datasets.data[0].data.length > 50) {
+            // Aggregate data theo giờ cho mỗi station
+            const hourlyData = {};
+
+            datasets.data.forEach(ds => {
+                ds.data.forEach(point => {
+                    const date = new Date(point.x);
+                    // Round xuống giờ
+                    date.setMinutes(0, 0, 0);
+                    const hourKey = date.getTime();
+
+                    if (!hourlyData[hourKey]) {
+                        hourlyData[hourKey] = {};
+                    }
+                    if (!hourlyData[hourKey][ds.label]) {
+                        hourlyData[hourKey][ds.label] = [];
+                    }
+                    hourlyData[hourKey][ds.label].push(point.y);
+                });
+            });
+
+            // Tạo labels từ các giờ
+            const sortedHours = Object.keys(hourlyData).map(Number).sort((a, b) => a - b);
+            chartLabels = sortedHours.map(ts =>
+                new Date(ts).toLocaleString('vi-VN', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            );
+
+            // Tính trung bình cho mỗi station mỗi giờ
+            chartDatasets = datasets.data.map(ds => ({
+                ...ds,
+                data: sortedHours.map(hourKey => {
+                    const values = hourlyData[hourKey][ds.label];
+                    if (values && values.length > 0) {
+                        return values.reduce((a, b) => a + b, 0) / values.length;
+                    }
+                    return null;
+                })
+            }));
+
+            console.log(`[Bar Chart] Aggregated to ${sortedHours.length} hourly data points`);
+        } else if (isBarChart) {
+            // Ít dữ liệu, hiển thị trực tiếp
+            const allTimestamps = new Set();
+            datasets.data.forEach(ds => {
+                ds.data.forEach(point => allTimestamps.add(point.x));
+            });
+            chartLabels = Array.from(allTimestamps)
+                .sort((a, b) => a - b)
+                .map(ts => new Date(ts).toLocaleString('vi-VN', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }));
+
+            chartDatasets = datasets.data.map(ds => ({
+                ...ds,
+                data: ds.data.map(point => point.y)
+            }));
+        }
 
         // Create new chart
         chart = new Chart(ctx, {
             type: chartType,
             data: {
-                labels: datasets.labels,
-                datasets: datasets.data
+                labels: chartLabels,
+                datasets: chartDatasets
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        type: 'time',
-                        time: {
-                            unit: 'hour',
-                            displayFormats: {
-                                hour: 'DD/MM HH:mm'
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Thời gian'
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: getParameterLabel(parameter)
-                        }
-                    }
-                },
+                scales: scalesConfig,
                 plugins: {
                     legend: {
                         position: 'top'
@@ -323,18 +543,33 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // ✨ [TỐI ƯU] Tính toán thống kê cho mảng lớn (tránh stack overflow)
     function calculateStatistics(values) {
-        const avg = values.reduce((a, b) => a + b, 0) / values.length;
-        const max = Math.max(...values);
-        const min = Math.min(...values);
+        if (!values || values.length === 0) {
+            return { average: 0, max: 0, min: 0, stdDev: 0 };
+        }
 
-        // Calculate standard deviation
-        const squareDiffs = values.map(value => {
-            const diff = value - avg;
-            return diff * diff;
-        });
-        const avgSquareDiff = squareDiffs.reduce((a, b) => a + b, 0) / values.length;
-        const stdDev = Math.sqrt(avgSquareDiff);
+        // Tính min, max, sum trong một vòng lặp duy nhất
+        let min = values[0];
+        let max = values[0];
+        let sum = 0;
+
+        for (let i = 0; i < values.length; i++) {
+            const val = values[i];
+            if (val < min) min = val;
+            if (val > max) max = val;
+            sum += val;
+        }
+
+        const avg = sum / values.length;
+
+        // Tính độ lệch chuẩn
+        let sumSquareDiff = 0;
+        for (let i = 0; i < values.length; i++) {
+            const diff = values[i] - avg;
+            sumSquareDiff += diff * diff;
+        }
+        const stdDev = Math.sqrt(sumSquareDiff / values.length);
 
         return {
             average: avg,
@@ -412,20 +647,76 @@ document.addEventListener('DOMContentLoaded', function () {
         return date.toISOString().slice(0, 16);
     }
 
-    function prepareChartDatasets(data, parameter) {
+    // ✨ [TỐI ƯU] Giới hạn số điểm hiển thị trên chart
+    const MAX_CHART_POINTS_PER_STATION = 2000;
+
+    /**
+     * ✨ [MỚI] Downsample dữ liệu bằng cách lấy mẫu đều
+     */
+    function downsampleData(data, maxPoints) {
+        if (data.length <= maxPoints) return data;
+
+        const step = Math.ceil(data.length / maxPoints);
+        const sampled = [];
+
+        for (let i = 0; i < data.length; i += step) {
+            sampled.push(data[i]);
+        }
+
+        // Đảm bảo luôn có điểm cuối cùng
+        if (sampled[sampled.length - 1] !== data[data.length - 1]) {
+            sampled.push(data[data.length - 1]);
+        }
+
+        return sampled;
+    }
+
+    function prepareChartDatasets(data, parameter, chartType = 'line') {
         const stations = [...new Set(data.map(d => d.station))];
 
         const datasets = stations.map(station => {
-            const stationData = data.filter(d => d.station === station);
+            let stationData = data.filter(d => d.station === station);
+
+            // Sắp xếp theo thời gian
+            stationData.sort((a, b) => a.timestamp - b.timestamp);
+
+            // Downsample nếu quá nhiều điểm
+            if (stationData.length > MAX_CHART_POINTS_PER_STATION) {
+                console.log(`[Chart] Downsampling station ${station}: ${stationData.length} → ${MAX_CHART_POINTS_PER_STATION} points`);
+                stationData = downsampleData(stationData, MAX_CHART_POINTS_PER_STATION);
+            }
+
+            // ✨ [TỐI ƯU] Cấu hình phù hợp với từng loại biểu đồ
+            let pointRadius = 0;
+            let borderWidth = 2;
+
+            if (chartType === 'scatter') {
+                // Scatter chart: luôn hiển thị điểm
+                pointRadius = stationData.length > 500 ? 2 : 4;
+                borderWidth = 0;
+            } else if (chartType === 'line') {
+                // Line chart: ẩn điểm nếu quá nhiều
+                pointRadius = stationData.length > 200 ? 0 : 2;
+                borderWidth = stationData.length > 500 ? 1 : 2;
+            } else if (chartType === 'bar') {
+                // Bar chart: không cần pointRadius
+                pointRadius = 0;
+                borderWidth = 1;
+            }
+
             return {
-                label: `Trạm ${station}`,
+                label: `Trạm ${station.replace('station_', '').replace(/^0+/, '')}`,
                 data: stationData.map(d => ({
                     x: d.timestamp,
                     y: d[parameter]
-                })).sort((a, b) => a.x - b.x), // Sắp xếp lại để đảm bảo biểu đồ vẽ đúng
+                })),
                 borderColor: CONFIG.CHART_COLORS[station],
-                backgroundColor: `${CONFIG.CHART_COLORS[station]}B3`, // ✨ [SỬA LỖI] Thêm màu nền cho biểu đồ cột (với 70% độ mờ)
-                fill: false
+                backgroundColor: `${CONFIG.CHART_COLORS[station]}B3`,
+                fill: false,
+                pointRadius: pointRadius,
+                borderWidth: borderWidth,
+                barPercentage: 0.9,
+                categoryPercentage: 0.9
             };
         });
 

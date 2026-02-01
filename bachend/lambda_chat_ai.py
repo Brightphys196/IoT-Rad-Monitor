@@ -10,7 +10,7 @@ from decimal import Decimal
 #                      KHỞI TẠO CLIENT & CẤU HÌNH
 # =================================================================
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-GEMINI_MODEL = "gemini-2.5-flash-latest"
+GEMINI_MODEL = "gemini-3-flash-preview"  # Gemini 3 - model mới nhất
 
 cognito_client = boto3.client('cognito-idp', region_name='ap-southeast-1')
 lambda_client = boto3.client('lambda', region_name='ap-southeast-1')
@@ -43,7 +43,10 @@ def create_cors_response(status_code, body):
     }
 
 def call_gemini_api(prompt):
-    """Gọi Gemini API với một hệ thống chỉ thị (system prompt) mạnh mẽ."""
+    """
+    Gọi Gemini API đơn giản - KHÔNG có retry logic ở đây.
+    Frontend sẽ xử lý retry để tránh Lambda timeout.
+    """
     
     if not GEMINI_API_KEY:
         raise Exception("GEMINI_API_KEY chưa được cấu hình")
@@ -74,13 +77,21 @@ def call_gemini_api(prompt):
       "action": "GET_SYSTEM_LOGS"
     }}
 
-    4. Nếu người dùng muốn lấy TRẠNG THÁI THIẾT BỊ (ví dụ: "trạm 1 còn online không"):
+    4. Nếu người dùng muốn lấy TRẠNG THÁI THIẾT BỊ (ví dụ: "trạm 1 còn online không", "kiểm tra trạng thái tất cả các trạm"):
     {{
       "action": "GET_DEVICE_STATUS",
       "station": "<station_id>"
     }}
+    - <station_id>: "station_01", "station_02", "station_03", "station_04", hoặc "all" để kiểm tra TẤT CẢ các trạm.
     
-    5. Nếu người dùng hỏi chung chung, chào hỏi, hoặc yêu cầu không thể thực hiện:
+    5. Nếu người dùng muốn PHÂN TÍCH, ĐÁNH GIÁ, hoặc hỏi về LƯU Ý/CẢNH BÁO/BẤT THƯỜNG của một trạm (ví dụ: "trạm 1 có lưu ý gì không?", "có vấn đề gì ở trạm 2?", "phân tích trạm 3"):
+    {{
+      "action": "ANALYZE_STATION",
+      "station": "<station_id>"
+    }}
+    - Sử dụng action này khi người dùng hỏi về tình trạng, cảnh báo, bất thường, hoặc muốn biết có điều gì cần chú ý.
+    
+    6. Nếu người dùng hỏi chung chung, chào hỏi, hoặc yêu cầu không thể thực hiện:
     {{
       "action": "SAY",
       "response": "<văn bản trả lời thân thiện bằng Tiếng Việt>"
@@ -101,7 +112,7 @@ def call_gemini_api(prompt):
     req = urllib.request.Request(api_url, data=data, headers={'Content-Type': 'application/json'})
 
     try:
-        with urllib.request.urlopen(req, timeout=20) as response:
+        with urllib.request.urlopen(req, timeout=25) as response:
             response_body = response.read().decode('utf-8')
             result = json.loads(response_body)
             if response.status != 200:
@@ -114,7 +125,8 @@ def call_gemini_api(prompt):
         except Exception:
             body = str(he)
         print(f"HTTPError calling Gemini: {he.code} {he.reason} - {body}")
-        raise Exception(f"HTTP Error {he.code}: {body}")
+        # Trả về lỗi rõ ràng cho frontend xử lý
+        raise Exception(f"RATE_LIMIT" if he.code == 429 else f"HTTP Error {he.code}: {body}")
     except urllib.error.URLError as ue:
         print(f"URLError calling Gemini: {ue}")
         raise Exception(f"URL Error: {ue}")
@@ -233,9 +245,96 @@ def lambda_handler(event, context):
 
         elif action == "GET_DEVICE_STATUS":
             station_id = ai_command.get('station', 'station_01')
-            lambda_payload = {'queryStringParameters': {'station': station_id}}
-            data = invoke_lambda(DEVICE_STATUS_LAMBDA_NAME, lambda_payload)
-            final_response = f"Trạng thái {station_id}: {data.get('status')}. {data.get('details')}"
+            
+            # Hỗ trợ kiểm tra TẤT CẢ các trạm
+            if station_id == "all":
+                all_stations = ['station_01', 'station_02', 'station_03', 'station_04']
+                results = []
+                online_count = 0
+                offline_count = 0
+                
+                for sid in all_stations:
+                    try:
+                        lambda_payload = {'queryStringParameters': {'station': sid}}
+                        data = invoke_lambda(DEVICE_STATUS_LAMBDA_NAME, lambda_payload)
+                        status = data.get('status', 'unknown')
+                        station_name = sid.replace('station_0', 'Trạm ')
+                        
+                        if status == 'online':
+                            online_count += 1
+                            results.append(f"✅ {station_name}: Online")
+                        else:
+                            offline_count += 1
+                            results.append(f"❌ {station_name}: Offline - {data.get('details', '')}")
+                    except Exception as e:
+                        offline_count += 1
+                        results.append(f"⚠️ {sid}: Lỗi khi kiểm tra")
+                
+                final_response = f"📊 Tổng quan: {online_count} online, {offline_count} offline\n" + "\n".join(results)
+            else:
+                lambda_payload = {'queryStringParameters': {'station': station_id}}
+                data = invoke_lambda(DEVICE_STATUS_LAMBDA_NAME, lambda_payload)
+                station_name = station_id.replace('station_0', 'Trạm ')
+                status = data.get('status', 'unknown')
+                status_emoji = "✅" if status == "online" else "❌"
+                final_response = f"{status_emoji} {station_name}: {status}. {data.get('details')}"
+        
+        elif action == "ANALYZE_STATION":
+            station_id = ai_command.get('station', 'station_01')
+            station_name = station_id.replace('station_0', 'Trạm ')
+            
+            # Lấy dữ liệu 1 ngày gần nhất
+            lambda_payload = {'queryStringParameters': {'station': station_id, 'range': '1d'}}
+            try:
+                data = invoke_lambda(GET_HISTORICAL_DATA_LAMBDA_NAME, lambda_payload)
+            except Exception:
+                data = []
+            
+            if not data:
+                final_response = f"⚠️ Không có dữ liệu gần đây cho {station_name} để phân tích."
+            else:
+                # Lấy dữ liệu mới nhất
+                latest = data[-1]
+                temp = float(latest.get('temperature', 0))
+                humidity = float(latest.get('humidity', 0))
+                radiation = float(latest.get('uSv', 0))
+                
+                warnings = []
+                safe_notes = []
+                
+                # Kiểm tra phóng xạ
+                if radiation > 0.5:
+                    warnings.append(f"⚠️ Phóng xạ CAO: {radiation} µSv/h (ngưỡng an toàn: < 0.5 µSv/h)")
+                elif radiation > 0.3:
+                    warnings.append(f"🔶 Phóng xạ tăng nhẹ: {radiation} µSv/h (theo dõi thêm)")
+                else:
+                    safe_notes.append(f"✅ Phóng xạ: {radiation} µSv/h - Bình thường")
+                
+                # Kiểm tra nhiệt độ
+                if temp > 40:
+                    warnings.append(f"🔥 Nhiệt độ RẤT CAO: {temp}°C")
+                elif temp > 35:
+                    warnings.append(f"⚠️ Nhiệt độ cao: {temp}°C")
+                elif temp < 10:
+                    warnings.append(f"❄️ Nhiệt độ thấp: {temp}°C")
+                else:
+                    safe_notes.append(f"✅ Nhiệt độ: {temp}°C - Bình thường")
+                
+                # Kiểm tra độ ẩm
+                if humidity > 85:
+                    warnings.append(f"💧 Độ ẩm cao: {humidity}%")
+                elif humidity < 30:
+                    warnings.append(f"🏜️ Độ ẩm thấp: {humidity}%")
+                else:
+                    safe_notes.append(f"✅ Độ ẩm: {humidity}% - Bình thường")
+                
+                # Tạo response
+                if warnings:
+                    final_response = f"🔔 **{station_name}** - CÓ LƯU Ý:\n" + "\n".join(warnings)
+                    if safe_notes:
+                        final_response += "\n\n" + "\n".join(safe_notes)
+                else:
+                    final_response = f"✅ **{station_name}** - Tất cả chỉ số BÌNH THƯỜNG:\n" + "\n".join(safe_notes)
             
         elif action == "SAY":
             final_response = ai_command.get('response')
